@@ -3,23 +3,28 @@ package main
 import (
 	"desafio-tecnico-fullstack/backend/handlers"
 	"desafio-tecnico-fullstack/backend/middleware"
-	"desafio-tecnico-fullstack/backend/storage"
+	"desafio-tecnico-fullstack/backend/storage/connection"
+	"desafio-tecnico-fullstack/backend/storage/repository"
 	"log"
 	"net/http"
+
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	db, err := storage.NewDB()
+	db, err := connection.NewDB()
 	if err != nil {
 		log.Fatalf("Erro ao conectar no banco: %v", err)
 	}
 	defer db.Close()
 
+	repo := repository.NewUserRepository(db)
+
 	router := gin.Default()
-	
+
 	router.Use(func(c *gin.Context) {
 		c.Set("db", db)
+		c.Set("userRepository", repo)
 		c.Next()
 	})
 
