@@ -22,14 +22,8 @@ func main() {
 
 	router := gin.Default()
 
-	router.Use(func(c *gin.Context) {
-		c.Set("db", db)
-		c.Set("userRepository", repo)
-		c.Next()
-	})
-
-	router.POST("/register", handlers.Register)
-	router.POST("/login", handlers.Login)
+	router.POST("/register", handlers.RegisterHandler(repo))
+	router.POST("/login", handlers.LoginHandler(repo))
 
 	protected := router.Group("/")
 	protected.Use(middleware.AuthMiddleware())
