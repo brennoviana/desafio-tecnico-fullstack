@@ -20,7 +20,7 @@ func Register(c *gin.Context) {
 		Password string `json:"password"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		c.JSON(http.StatusBadRequest, gin.H{"Erro": "Requisição inválida"})
 		return
 	}
 	hash, _ := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
@@ -28,9 +28,9 @@ func Register(c *gin.Context) {
 	err := storage.AddUser(db, user)
 	if err != nil {
 		if strings.Contains(err.Error(), "duplicate key") {
-			c.JSON(http.StatusConflict, gin.H{"error": "user already exists"})
+			c.JSON(http.StatusConflict, gin.H{"Erro": "Usuário já existe"})
 		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.JSON(http.StatusInternalServerError, gin.H{"Erro": err.Error()})
 		}
 		return
 	}
@@ -44,12 +44,12 @@ func Login(c *gin.Context) {
 		Password string `json:"password"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		c.JSON(http.StatusBadRequest, gin.H{"Erro": "Requisição inválida"})
 		return
 	}
 	user := storage.GetUserByCPF(db, req.CPF)
 	if user == nil || bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)) != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid credentials"})
+		c.JSON(http.StatusUnauthorized, gin.H{"Erro": "Requisição inválida"})
 		return
 	}
 	token, _ := utils.GenerateJWT(user.CPF)

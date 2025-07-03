@@ -6,7 +6,6 @@ import (
 	"desafio-tecnico-fullstack/backend/storage"
 	"log"
 	"net/http"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,7 +17,7 @@ func main() {
 	defer db.Close()
 
 	router := gin.Default()
-	// Middleware para injetar *sql.DB no contexto
+	
 	router.Use(func(c *gin.Context) {
 		c.Set("db", db)
 		c.Next()
