@@ -13,12 +13,12 @@ func GenerateJWT(cpf string) (string, error) {
 		"cpf": cpf,
 		"exp": time.Now().Add(time.Hour * 1).Unix(),
 	})
-	return token.SignedString([]byte(config.AppConfig.JWTSecret))
+	return token.SignedString([]byte(config.AppConfig.JWT.Secret))
 }
 
 func ValidateJWT(tokenString string) (string, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		return []byte(config.AppConfig.JWTSecret), nil
+		return []byte(config.AppConfig.JWT.Secret), nil
 	})
 	if err != nil {
 		return "", err

@@ -9,11 +9,11 @@ import (
 )
 
 func NewDB() (*sql.DB, error) {
-	user := config.AppConfig.DBUser
-	password := config.AppConfig.DBPassword
-	dbname := config.AppConfig.DBName
-	host := config.AppConfig.DBHost
-	port := config.AppConfig.DBPort
+	user := config.AppConfig.Database.User
+	password := config.AppConfig.Database.Password
+	dbname := config.AppConfig.Database.Name
+	host := config.AppConfig.Database.Host
+	port := config.AppConfig.Database.Port
 
 	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", user, password, host, port, dbname)
 	db, err := sql.Open("postgres", connStr)

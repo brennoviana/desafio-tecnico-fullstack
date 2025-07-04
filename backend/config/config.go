@@ -1,31 +1,41 @@
 package config
 
 import (
-	"log"
 	"os"
 )
 
+type DatabaseConfig struct {
+	Host     string
+	Port     string
+	User     string
+	Password string
+	Name     string
+}
+
+type JWTConfig struct {
+	Secret string
+}
+
 type Config struct {
-	DBHost     string
-	DBPort     string
-	DBUser     string
-	DBPassword string
-	DBName     string
-	JWTSecret  string
+	Database DatabaseConfig
+	JWT      JWTConfig
 }
 
 var AppConfig *Config
 
 func LoadConfig() {
 	AppConfig = &Config{
-		DBHost:     getEnv("POSTGRES_HOST", ""),
-		DBPort:     getEnv("POSTGRES_PORT", ""),
-		DBUser:     getEnv("POSTGRES_USER", ""),
-		DBPassword: getEnv("POSTGRES_PASSWORD", ""),
-		DBName:     getEnv("POSTGRES_DB", ""),
-		JWTSecret:  getEnv("JWT_SECRET", ""),
+		Database: DatabaseConfig{
+			Host:     getEnv("POSTGRES_HOST", ""),
+			Port:     getEnv("POSTGRES_PORT", ""),
+			User:     getEnv("POSTGRES_USER", ""),
+			Password: getEnv("POSTGRES_PASSWORD", ""),
+			Name:     getEnv("POSTGRES_DB", ""),
+		},
+		JWT: JWTConfig{
+			Secret: getEnv("JWT_SECRET", ""),
+		},
 	}
-	log.Printf("Config loaded: host=%s port=%s user=%s db=%s", AppConfig.DBHost, AppConfig.DBPort, AppConfig.DBUser, AppConfig.DBName)
 }
 
 func getEnv(key, fallback string) string {
