@@ -3,12 +3,15 @@ package main
 import (
 	"desafio-tecnico-fullstack/backend/config"
 	"desafio-tecnico-fullstack/backend/routes"
-	"desafio-tecnico-fullstack/backend/services"
+	sessionService "desafio-tecnico-fullstack/backend/services/session"
+	topicService "desafio-tecnico-fullstack/backend/services/topic"
+	userService "desafio-tecnico-fullstack/backend/services/user"
+	voteService "desafio-tecnico-fullstack/backend/services/vote"
 	"desafio-tecnico-fullstack/backend/storage/connection"
-	sessionrepo "desafio-tecnico-fullstack/backend/storage/repository/session"
-	topicrepo "desafio-tecnico-fullstack/backend/storage/repository/topic"
-	userrepo "desafio-tecnico-fullstack/backend/storage/repository/user"
-	voterepo "desafio-tecnico-fullstack/backend/storage/repository/vote"
+	sessionRepo "desafio-tecnico-fullstack/backend/storage/repository/session"
+	topicRepo "desafio-tecnico-fullstack/backend/storage/repository/topic"
+	userRepo "desafio-tecnico-fullstack/backend/storage/repository/user"
+	voteRepo "desafio-tecnico-fullstack/backend/storage/repository/vote"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -23,17 +26,17 @@ func main() {
 	}
 	defer db.Close()
 
-	userRepository := userrepo.NewUserRepository(db)
-	topicRepository := topicrepo.NewTopicRepository(db)
-	sessionRepository := sessionrepo.NewSessionRepository(db)
-	voteRepository := voterepo.NewVoteRepository(db)
+	userRepository := userRepo.NewUserRepository(db)
+	topicRepository := topicRepo.NewTopicRepository(db)
+	sessionRepository := sessionRepo.NewSessionRepository(db)
+	voteRepository := voteRepo.NewVoteRepository(db)
 
-	userService := services.NewUserService(userRepository)
-	topicService := services.NewTopicService(topicRepository)
-	sessionService := services.NewSessionService(sessionRepository)
-	voteService := services.NewVoteService(voteRepository, sessionRepository)
+	userService := userService.NewUserService(userRepository)
+	topicService := topicService.NewTopicService(topicRepository)
+	sessionService := sessionService.NewSessionService(sessionRepository)
+	voteService := voteService.NewVoteService(voteRepository, sessionRepository)
 
-	deps := &routes.Dependencies{
+	deps := &routes.Services{
 		UserService:    userService,
 		TopicService:   topicService,
 		SessionService: sessionService,

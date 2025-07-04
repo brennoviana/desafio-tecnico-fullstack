@@ -1,7 +1,7 @@
 package vote
 
 import (
-	"desafio-tecnico-fullstack/backend/services"
+	"desafio-tecnico-fullstack/backend/services/vote"
 	"desafio-tecnico-fullstack/backend/utils"
 	"net/http"
 	"strconv"
@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func VoteHandler(voteService services.VoteService) gin.HandlerFunc {
+func VoteHandler(voteService vote.VoteService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		topicID, err := strconv.Atoi(c.Param("topic_id"))
 		if err != nil {
@@ -33,7 +33,7 @@ func VoteHandler(voteService services.VoteService) gin.HandlerFunc {
 	}
 }
 
-func ResultHandler(voteService services.VoteService) gin.HandlerFunc {
+func ResultHandler(voteService vote.VoteService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		topicID, err := strconv.Atoi(c.Param("topic_id"))
 		if err != nil {

@@ -1,4 +1,4 @@
-package services
+package vote
 
 import (
 	"desafio-tecnico-fullstack/backend/models"

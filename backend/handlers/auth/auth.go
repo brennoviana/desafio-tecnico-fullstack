@@ -1,14 +1,14 @@
 package auth
 
 import (
-	"desafio-tecnico-fullstack/backend/services"
+	"desafio-tecnico-fullstack/backend/services/user"
 	"desafio-tecnico-fullstack/backend/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterHandler(userService services.UserService) gin.HandlerFunc {
+func RegisterHandler(userService user.UserService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req struct {
 			Name     string `json:"name"`
@@ -40,7 +40,7 @@ func RegisterHandler(userService services.UserService) gin.HandlerFunc {
 	}
 }
 
-func LoginHandler(userService services.UserService) gin.HandlerFunc {
+func LoginHandler(userService user.UserService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req struct {
 			CPF      string `json:"cpf"`

@@ -1,4 +1,4 @@
-package services
+package user
 
 import (
 	"desafio-tecnico-fullstack/backend/models"
@@ -16,11 +16,15 @@ type UserService interface {
 }
 
 type userService struct {
-	repo user.UserRepository
+	repo        user.UserRepository
+	generateJWT func(cpf string) (string, error)
 }
 
 func NewUserService(repo user.UserRepository) UserService {
-	return &userService{repo: repo}
+	return &userService{
+		repo:        repo,
+		generateJWT: utils.GenerateJWT,
+	}
 }
 
 func (s *userService) RegisterUser(name, cpf, password string) error {
@@ -53,7 +57,7 @@ func (s *userService) AuthenticateUser(cpf, password string) (string, error) {
 	if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)) != nil {
 		return "", errors.New("usuário ou senha inválidos")
 	}
-	token, err := utils.GenerateJWT(user.CPF)
+	token, err := s.generateJWT(user.CPF)
 	if err != nil {
 		return "", err
 	}

@@ -6,19 +6,22 @@ import (
 	topichandler "desafio-tecnico-fullstack/backend/handlers/topic"
 	votehandler "desafio-tecnico-fullstack/backend/handlers/vote"
 	"desafio-tecnico-fullstack/backend/middleware"
-	"desafio-tecnico-fullstack/backend/services"
+	"desafio-tecnico-fullstack/backend/services/session"
+	"desafio-tecnico-fullstack/backend/services/topic"
+	"desafio-tecnico-fullstack/backend/services/user"
+	"desafio-tecnico-fullstack/backend/services/vote"
 
 	"github.com/gin-gonic/gin"
 )
 
-type Dependencies struct {
-	UserService    services.UserService
-	TopicService   services.TopicService
-	SessionService services.SessionService
-	VoteService    services.VoteService
+type Services struct {
+	UserService    user.UserService
+	TopicService   topic.TopicService
+	SessionService session.SessionService
+	VoteService    vote.VoteService
 }
 
-func RegisterRoutes(router *gin.Engine, deps *Dependencies) {
+func RegisterRoutes(router *gin.Engine, deps *Services) {
 	router.POST("/register", auth.RegisterHandler(deps.UserService))
 	router.POST("/login", auth.LoginHandler(deps.UserService))
 

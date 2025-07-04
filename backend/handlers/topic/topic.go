@@ -1,13 +1,13 @@
 package topic
 
 import (
-	"desafio-tecnico-fullstack/backend/services"
+	"desafio-tecnico-fullstack/backend/services/topic"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-func CreateTopicHandler(topicService services.TopicService) gin.HandlerFunc {
+func CreateTopicHandler(topicService topic.TopicService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req struct {
 			Name string `json:"name"`
@@ -29,7 +29,7 @@ func CreateTopicHandler(topicService services.TopicService) gin.HandlerFunc {
 	}
 }
 
-func ListTopicsHandler(topicService services.TopicService) gin.HandlerFunc {
+func ListTopicsHandler(topicService topic.TopicService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		topics, err := topicService.ListTopics()
 		if err != nil {

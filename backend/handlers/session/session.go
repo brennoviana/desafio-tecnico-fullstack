@@ -1,7 +1,7 @@
 package session
 
 import (
-	"desafio-tecnico-fullstack/backend/services"
+	"desafio-tecnico-fullstack/backend/services/session"
 	"desafio-tecnico-fullstack/backend/utils"
 	"net/http"
 	"strconv"
@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func OpenSessionHandler(sessionService services.SessionService) gin.HandlerFunc {
+func OpenSessionHandler(sessionService session.SessionService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		topicID, err := strconv.Atoi(c.Param("topic_id"))
 		if err != nil {

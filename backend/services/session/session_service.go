@@ -1,4 +1,4 @@
-package services
+package session
 
 import (
 	"desafio-tecnico-fullstack/backend/models"
