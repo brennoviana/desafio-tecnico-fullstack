@@ -1,11 +1,8 @@
 package main
 
 import (
-	authhandler "desafio-tecnico-fullstack/backend/handlers/auth"
-	sessionhandler "desafio-tecnico-fullstack/backend/handlers/session"
-	topichandler "desafio-tecnico-fullstack/backend/handlers/topic"
-	votehandler "desafio-tecnico-fullstack/backend/handlers/vote"
-	"desafio-tecnico-fullstack/backend/middleware"
+	"desafio-tecnico-fullstack/backend/config"
+	"desafio-tecnico-fullstack/backend/routes"
 	"desafio-tecnico-fullstack/backend/storage/connection"
 	sessionrepo "desafio-tecnico-fullstack/backend/storage/repository/session"
 	topicrepo "desafio-tecnico-fullstack/backend/storage/repository/topic"
@@ -17,26 +14,22 @@ import (
 )
 
 func main() {
+	config.LoadConfig()
+
 	db, err := connection.NewDB()
 	if err != nil {
 		log.Fatalf("Erro ao conectar no banco: %v", err)
 	}
 	defer db.Close()
 
-	repo := userrepo.NewUserRepository(db)
-	topicRepo := topicrepo.NewTopicRepository(db)
-	sessionRepo := sessionrepo.NewSessionRepository(db)
-	voteRepo := voterepo.NewVoteRepository(db)
+	deps := &routes.Dependencies{
+		UserRepo:    userrepo.NewUserRepository(db),
+		TopicRepo:   topicrepo.NewTopicRepository(db),
+		SessionRepo: sessionrepo.NewSessionRepository(db),
+		VoteRepo:    voterepo.NewVoteRepository(db),
+	}
 
 	router := gin.Default()
-
-	router.POST("/register", authhandler.RegisterHandler(repo))
-	router.POST("/login", authhandler.LoginHandler(repo))
-	router.POST("/topics", middleware.AuthMiddleware(), topichandler.CreateTopicHandler(topicRepo))
-	router.GET("/topics", topichandler.ListTopicsHandler(topicRepo))
-	router.POST("/topics/:topic_id/session", middleware.AuthMiddleware(), sessionhandler.OpenSessionHandler(sessionRepo))
-	router.POST("/topics/:topic_id/vote", middleware.AuthMiddleware(), votehandler.VoteHandler(voteRepo, sessionRepo))
-	router.GET("/topics/:topic_id/result", votehandler.ResultHandler(voteRepo, sessionRepo))
-
+	routes.RegisterRoutes(router, deps)
 	router.Run(":8080")
 }

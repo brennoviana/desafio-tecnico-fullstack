@@ -2,18 +2,18 @@ package connection
 
 import (
 	"database/sql"
+	"desafio-tecnico-fullstack/backend/config"
 	"fmt"
-	"os"
 
 	_ "github.com/lib/pq"
 )
 
 func NewDB() (*sql.DB, error) {
-	user := os.Getenv("POSTGRES_USER")
-	password := os.Getenv("POSTGRES_PASSWORD")
-	dbname := os.Getenv("POSTGRES_DB")
-	host := os.Getenv("POSTGRES_HOST")
-	port := os.Getenv("POSTGRES_PORT")
+	user := config.AppConfig.DBUser
+	password := config.AppConfig.DBPassword
+	dbname := config.AppConfig.DBName
+	host := config.AppConfig.DBHost
+	port := config.AppConfig.DBPort
 
 	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", user, password, host, port, dbname)
 	db, err := sql.Open("postgres", connStr)
