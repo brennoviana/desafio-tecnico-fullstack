@@ -12,8 +12,10 @@ import (
 	topicRepo "desafio-tecnico-fullstack/backend/storage/repository/topic"
 	userRepo "desafio-tecnico-fullstack/backend/storage/repository/user"
 	voteRepo "desafio-tecnico-fullstack/backend/storage/repository/vote"
+
 	"log"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -44,6 +46,15 @@ func main() {
 	}
 
 	router := gin.Default()
+
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:5173"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Authorization", "Content-Type"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+	}))
+
 	routes.RegisterRoutes(router, deps)
 	router.Run(":8080")
 }
