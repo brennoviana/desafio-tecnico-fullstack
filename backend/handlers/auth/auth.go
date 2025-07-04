@@ -2,6 +2,7 @@ package auth
 
 import (
 	"desafio-tecnico-fullstack/backend/services"
+	"desafio-tecnico-fullstack/backend/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -15,27 +16,27 @@ func RegisterHandler(userService services.UserService) gin.HandlerFunc {
 			Password string `json:"password"`
 		}
 		if err := c.ShouldBindJSON(&req); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"Erro": "Requisição inválida"})
+			utils.RespondError(c, http.StatusBadRequest, "requisição inválida")
 			return
 		}
 
 		if req.Name == "" || req.CPF == "" || req.Password == "" {
-			c.JSON(http.StatusBadRequest, gin.H{"Erro": "Campos obrigatórios não preenchidos"})
+			utils.RespondError(c, http.StatusBadRequest, "campos obrigatórios não preenchidos")
 			return
 		}
 
 		err := userService.RegisterUser(req.Name, req.CPF, req.Password)
 		if err != nil {
 			if err.Error() == "usuário já existe" {
-				c.JSON(http.StatusConflict, gin.H{"Erro": err.Error()})
+				utils.RespondError(c, http.StatusConflict, err.Error())
 			} else if err.Error() == "cpf inválido" || err.Error() == "senha muito curta" {
-				c.JSON(http.StatusBadRequest, gin.H{"Erro": err.Error()})
+				utils.RespondError(c, http.StatusBadRequest, err.Error())
 			} else {
-				c.JSON(http.StatusInternalServerError, gin.H{"Erro": err.Error()})
+				utils.RespondError(c, http.StatusInternalServerError, err.Error())
 			}
 			return
 		}
-		c.Status(http.StatusCreated)
+		utils.RespondSuccess(c, nil)
 	}
 }
 
@@ -46,18 +47,18 @@ func LoginHandler(userService services.UserService) gin.HandlerFunc {
 			Password string `json:"password"`
 		}
 		if err := c.ShouldBindJSON(&req); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"Erro": "Requisição inválida"})
+			utils.RespondError(c, http.StatusBadRequest, "requisição inválida")
 			return
 		}
 		token, err := userService.AuthenticateUser(req.CPF, req.Password)
 		if err != nil {
 			if err.Error() == "usuário ou senha inválidos" {
-				c.JSON(http.StatusUnauthorized, gin.H{"Erro": err.Error()})
+				utils.RespondError(c, http.StatusUnauthorized, err.Error())
 			} else {
-				c.JSON(http.StatusInternalServerError, gin.H{"Erro": err.Error()})
+				utils.RespondError(c, http.StatusInternalServerError, err.Error())
 			}
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"token": token})
+		utils.RespondSuccess(c, gin.H{"token": token})
 	}
 }
