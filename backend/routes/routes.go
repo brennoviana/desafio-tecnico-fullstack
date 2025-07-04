@@ -6,28 +6,25 @@ import (
 	topichandler "desafio-tecnico-fullstack/backend/handlers/topic"
 	votehandler "desafio-tecnico-fullstack/backend/handlers/vote"
 	"desafio-tecnico-fullstack/backend/middleware"
-	sessionrepo "desafio-tecnico-fullstack/backend/storage/repository/session"
-	topicrepo "desafio-tecnico-fullstack/backend/storage/repository/topic"
-	userrepo "desafio-tecnico-fullstack/backend/storage/repository/user"
-	voterepo "desafio-tecnico-fullstack/backend/storage/repository/vote"
+	"desafio-tecnico-fullstack/backend/services"
 
 	"github.com/gin-gonic/gin"
 )
 
 type Dependencies struct {
-	UserRepo    userrepo.UserRepository
-	TopicRepo   topicrepo.TopicRepository
-	SessionRepo sessionrepo.SessionRepository
-	VoteRepo    voterepo.VoteRepository
+	UserService    services.UserService
+	TopicService   services.TopicService
+	SessionService services.SessionService
+	VoteService    services.VoteService
 }
 
 func RegisterRoutes(router *gin.Engine, deps *Dependencies) {
-	router.POST("/register", auth.RegisterHandler(deps.UserRepo))
-	router.POST("/login", auth.LoginHandler(deps.UserRepo))
+	router.POST("/register", auth.RegisterHandler(deps.UserService))
+	router.POST("/login", auth.LoginHandler(deps.UserService))
 
-	router.POST("/topics", middleware.AuthMiddleware(), topichandler.CreateTopicHandler(deps.TopicRepo))
-	router.GET("/topics", topichandler.ListTopicsHandler(deps.TopicRepo))
-	router.POST("/topics/:topic_id/session", middleware.AuthMiddleware(), sessionhandler.OpenSessionHandler(deps.SessionRepo))
-	router.POST("/topics/:topic_id/vote", middleware.AuthMiddleware(), votehandler.VoteHandler(deps.VoteRepo, deps.SessionRepo))
-	router.GET("/topics/:topic_id/result", votehandler.ResultHandler(deps.VoteRepo, deps.SessionRepo))
+	router.POST("/topics", middleware.AuthMiddleware(), topichandler.CreateTopicHandler(deps.TopicService))
+	router.GET("/topics", topichandler.ListTopicsHandler(deps.TopicService))
+	router.POST("/topics/:topic_id/session", middleware.AuthMiddleware(), sessionhandler.OpenSessionHandler(deps.SessionService))
+	router.POST("/topics/:topic_id/vote", middleware.AuthMiddleware(), votehandler.VoteHandler(deps.VoteService))
+	router.GET("/topics/:topic_id/result", votehandler.ResultHandler(deps.VoteService))
 }

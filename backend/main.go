@@ -3,6 +3,7 @@ package main
 import (
 	"desafio-tecnico-fullstack/backend/config"
 	"desafio-tecnico-fullstack/backend/routes"
+	"desafio-tecnico-fullstack/backend/services"
 	"desafio-tecnico-fullstack/backend/storage/connection"
 	sessionrepo "desafio-tecnico-fullstack/backend/storage/repository/session"
 	topicrepo "desafio-tecnico-fullstack/backend/storage/repository/topic"
@@ -22,11 +23,21 @@ func main() {
 	}
 	defer db.Close()
 
+	userRepository := userrepo.NewUserRepository(db)
+	topicRepository := topicrepo.NewTopicRepository(db)
+	sessionRepository := sessionrepo.NewSessionRepository(db)
+	voteRepository := voterepo.NewVoteRepository(db)
+
+	userService := services.NewUserService(userRepository)
+	topicService := services.NewTopicService(topicRepository)
+	sessionService := services.NewSessionService(sessionRepository)
+	voteService := services.NewVoteService(voteRepository, sessionRepository)
+
 	deps := &routes.Dependencies{
-		UserRepo:    userrepo.NewUserRepository(db),
-		TopicRepo:   topicrepo.NewTopicRepository(db),
-		SessionRepo: sessionrepo.NewSessionRepository(db),
-		VoteRepo:    voterepo.NewVoteRepository(db),
+		UserService:    userService,
+		TopicService:   topicService,
+		SessionService: sessionService,
+		VoteService:    voteService,
 	}
 
 	router := gin.Default()
