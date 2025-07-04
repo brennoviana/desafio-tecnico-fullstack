@@ -1,8 +1,8 @@
-package handlers
+package auth
 
 import (
 	"desafio-tecnico-fullstack/backend/models"
-	"desafio-tecnico-fullstack/backend/storage/repository"
+	"desafio-tecnico-fullstack/backend/storage/repository/user"
 	"desafio-tecnico-fullstack/backend/utils"
 	"net/http"
 	"strings"
@@ -11,7 +11,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func RegisterHandler(repo *repository.UserRepository) gin.HandlerFunc {
+func RegisterHandler(repo user.UserRepository) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req struct {
 			Name     string `json:"name"`
@@ -51,7 +51,7 @@ func RegisterHandler(repo *repository.UserRepository) gin.HandlerFunc {
 	}
 }
 
-func LoginHandler(repo *repository.UserRepository) gin.HandlerFunc {
+func LoginHandler(repo user.UserRepository) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req struct {
 			CPF      string `json:"cpf"`
