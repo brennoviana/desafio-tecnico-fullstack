@@ -9,6 +9,7 @@ import (
 type SessionService interface {
 	OpenSession(topicID int, durationMinutes int) error
 	GetSessionByTopic(topicID int) (*models.Session, error)
+	UpdateExpiredSessions() error
 }
 
 type sessionService struct {
@@ -31,4 +32,8 @@ func (s *sessionService) OpenSession(topicID int, durationMinutes int) error {
 
 func (s *sessionService) GetSessionByTopic(topicID int) (*models.Session, error) {
 	return s.repo.GetSessionByTopic(topicID)
+}
+
+func (s *sessionService) UpdateExpiredSessions() error {
+	return s.repo.UpdateExpiredSessions()
 }

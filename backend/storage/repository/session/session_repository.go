@@ -3,11 +3,13 @@ package session
 import (
 	"database/sql"
 	"desafio-tecnico-fullstack/backend/models"
+	"time"
 )
 
 type SessionRepository interface {
 	OpenSession(topicID int, openAt, closeAt int64) error
 	GetSessionByTopic(topicID int) (*models.Session, error)
+	UpdateExpiredSessions() error
 }
 
 type sessionRepository struct {
@@ -39,4 +41,20 @@ func (r *sessionRepository) GetSessionByTopic(topicID int) (*models.Session, err
 		return nil, err
 	}
 	return &s, nil
+}
+
+func (r *sessionRepository) UpdateExpiredSessions() error {
+	now := time.Now().Unix()
+
+	_, err := r.db.Exec(`
+		UPDATE topics 
+		SET status = 'Votação Encerrada' 
+		WHERE id IN (
+			SELECT topic_id 
+			FROM sessions 
+			WHERE close_at < $1
+		) AND status = 'Sessão Aberta'
+	`, now)
+
+	return err
 }

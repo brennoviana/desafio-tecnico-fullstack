@@ -34,8 +34,8 @@ func main() {
 	voteRepository := voteRepo.NewVoteRepository(db)
 
 	userService := userService.NewUserService(userRepository)
-	topicService := topicService.NewTopicService(topicRepository)
 	sessionService := sessionService.NewSessionService(sessionRepository)
+	topicService := topicService.NewTopicService(topicRepository, sessionService)
 	voteService := voteService.NewVoteService(voteRepository, sessionRepository)
 
 	deps := &routes.Services{

@@ -29,7 +29,7 @@ func TestAuthenticateUser_Success(t *testing.T) {
 		generateJWT: func(cpf string) (string, error) { return "token123", nil },
 	}
 
-	token, err := service.AuthenticateUser("12345678901", "senha123")
+	token, _, err := service.AuthenticateUser("12345678901", "senha123")
 	if err != nil {
 		t.Fatalf("esperava sucesso, obteve erro: %v", err)
 	}
@@ -45,7 +45,7 @@ func TestAuthenticateUser_UserNotFound(t *testing.T) {
 		generateJWT: func(cpf string) (string, error) { return "token123", nil },
 	}
 
-	_, err := service.AuthenticateUser("00000000000", "senha123")
+	_, _, err := service.AuthenticateUser("00000000000", "senha123")
 	if err == nil || err.Error() != "usuário ou senha inválidos" {
 		t.Errorf("esperava erro de usuário ou senha inválidos, obteve: %v", err)
 	}
@@ -60,7 +60,7 @@ func TestAuthenticateUser_WrongPassword(t *testing.T) {
 		generateJWT: func(cpf string) (string, error) { return "token123", nil },
 	}
 
-	_, err := service.AuthenticateUser("12345678901", "errada")
+	_, _, err := service.AuthenticateUser("12345678901", "errada")
 	if err == nil || err.Error() != "usuário ou senha inválidos" {
 		t.Errorf("esperava erro de usuário ou senha inválidos, obteve: %v", err)
 	}

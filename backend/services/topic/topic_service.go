@@ -2,6 +2,7 @@ package topic
 
 import (
 	"desafio-tecnico-fullstack/backend/models"
+	"desafio-tecnico-fullstack/backend/services/session"
 	topicrepo "desafio-tecnico-fullstack/backend/storage/repository/topic"
 )
 
@@ -11,11 +12,15 @@ type TopicService interface {
 }
 
 type topicService struct {
-	repo topicrepo.TopicRepository
+	repo           topicrepo.TopicRepository
+	sessionService session.SessionService
 }
 
-func NewTopicService(repo topicrepo.TopicRepository) TopicService {
-	return &topicService{repo: repo}
+func NewTopicService(repo topicrepo.TopicRepository, sessionService session.SessionService) TopicService {
+	return &topicService{
+		repo:           repo,
+		sessionService: sessionService,
+	}
 }
 
 func (s *topicService) CreateTopic(name string, status string) error {
@@ -29,5 +34,9 @@ func (s *topicService) CreateTopic(name string, status string) error {
 }
 
 func (s *topicService) ListTopics() ([]models.Topic, error) {
+	if err := s.sessionService.UpdateExpiredSessions(); err != nil {
+		return nil, err
+	}
+
 	return s.repo.ListTopics()
 }
