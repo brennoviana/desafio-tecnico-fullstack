@@ -1,42 +1,24 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { fetchTopics } from '../services/api';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import { logoutUser } from '../store/authSlice';
+import { fetchTopics } from '../store/topicsSlice';
 import { AddTopicButton } from '../components/AddTopicButton';
-import type { Topic } from '../types/Topic';
 
 export const Dashboard: React.FC = () => {
-  const [topics, setTopics] = useState<Topic[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
   const dispatch = useAppDispatch();
-  const { user, isAuthenticated } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
-
-  const loadTopics = async () => {
-    try {
-      const topicsData = await fetchTopics();
-      setTopics(topicsData);
-    } catch (err) {
-      console.error(err);
-      setError('Erro ao carregar tópicos.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const { topics, loading, error } = useAppSelector((state) => state.topics);
 
   useEffect(() => {
-    loadTopics();
-  }, []);
+    dispatch(fetchTopics());
+  }, [dispatch]);
 
   const handleLogout = () => {
     dispatch(logoutUser());
     navigate('/dashboard');
-  };
-
-  const handleTopicAdded = () => {
-    loadTopics();
   };
 
   if (loading) {
@@ -63,7 +45,7 @@ export const Dashboard: React.FC = () => {
             </div>
             <div className="flex gap-2">
               {isAuthenticated && (
-                <AddTopicButton onTopicAdded={handleTopicAdded} />
+                <AddTopicButton />
               )}
               {isAuthenticated ? (
                 <button onClick={handleLogout} className="btn btn-danger">

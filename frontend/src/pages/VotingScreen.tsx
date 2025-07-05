@@ -1,19 +1,21 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { vote } from '../services/api';
-import { useAppSelector } from '../hooks/redux';
-import type { Topic } from '../types/Topic';
+import { useAppDispatch, useAppSelector } from '../hooks/redux';
+import { fetchTopics } from '../store/topicsSlice';
+import { submitVote } from '../store/resultsSlice';
 
 export const VotingScreen: React.FC = () => {
   const { topicId } = useParams<{ topicId: string }>();
-  const [topic, setTopic] = useState<Topic | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [voting, setVoting] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<boolean>(false);
   const [hasVoted, setHasVoted] = useState<boolean>(false);
-  const { user, isAuthenticated } = useAppSelector((state) => state.auth);
+  const [success, setSuccess] = useState<boolean>(false);
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  
+  const { user, isAuthenticated } = useAppSelector((state) => state.auth);
+  const { topics, loading, error } = useAppSelector((state) => state.topics);
+  const { voteLoading, voteError } = useAppSelector((state) => state.results);
+  
+  const topic = topics.find(t => t.id === parseInt(topicId || '0'));
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -21,62 +23,29 @@ export const VotingScreen: React.FC = () => {
       return;
     }
 
-    const loadTopic = async () => {
-      if (!topicId) {
-        setError('ID do tópico não encontrado');
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const response = await fetch(`http://localhost:8080/api/topics`);
-        const responseData = await response.json();
-        const topicsData = responseData.data || [];
-        const currentTopic = topicsData.find((t: Topic) => t.id === parseInt(topicId));
-        
-        if (!currentTopic) {
-          setError('Tópico não encontrado');
-          setLoading(false);
-          return;
-        }
-
-        setTopic(currentTopic);
-      } catch (err) {
-        console.error(err);
-        setError('Erro ao carregar dados da votação');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadTopic();
-  }, [topicId, isAuthenticated, navigate]);
-
-
+    if (topics.length === 0) {
+      dispatch(fetchTopics());
+    }
+  }, [isAuthenticated, navigate, dispatch, topics.length]);
 
   const handleVote = async (choice: 'Sim' | 'Não') => {
     if (!topicId || hasVoted) return;
 
     try {
-      setError(null);
-      setVoting(true);
+      await dispatch(submitVote({
+        topicId: parseInt(topicId),
+        choice
+      })).unwrap();
       
-      await vote(parseInt(topicId), choice);
       setSuccess(true);
       setHasVoted(true);
     } catch (err) {
       if (err instanceof Error && err.message.includes('já votou')) {
         setHasVoted(true);
-        setError('Você já votou nesta pauta');
-      } else {
-        setError(err instanceof Error ? err.message : 'Erro ao votar');
       }
-    } finally {
-      setVoting(false);
+      // Error is handled by Redux state
     }
   };
-
-
 
   if (loading) {
     return (
@@ -102,6 +71,22 @@ export const VotingScreen: React.FC = () => {
     );
   }
 
+  if (!topic) {
+    return (
+      <div className="centered-page">
+        <div className="card">
+          <div className="card-body text-center">
+            <h2 className="mb-4">Tópico não encontrado</h2>
+            <p className="mb-6 text-muted">O tópico que você está tentando acessar não existe.</p>
+            <Link to="/dashboard" className="btn btn-primary">
+              Voltar ao Dashboard
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="page">
       <div className="container" style={{ maxWidth: '600px' }}>
@@ -117,65 +102,73 @@ export const VotingScreen: React.FC = () => {
           )}
         </div>
 
-        {error && (
+        {(error || voteError) && (
           <div className="alert alert-danger">
-            {error}
+            {error || voteError}
           </div>
         )}
 
         {success && (
           <div className="alert alert-success">
             Voto registrado com sucesso!
-            <div className="mt-4">
-              <Link to={`/topic/${topicId}/results`} className="btn btn-info">
-                Ver Resultados
-              </Link>
-            </div>
           </div>
         )}
 
-        {topic && (
-          <div className="card">
-            <div className="card-body">
-              <h2 className="mb-4">{topic.name}</h2>
-              
-              {!hasVoted && !success && !error && (
-                <div>
-                  <h3 className="mb-6 text-center">Como você vota?</h3>
-                  <div className="voting-buttons">
-                    <button
-                      onClick={() => handleVote('Sim')}
-                      disabled={voting}
-                      className="btn btn-success vote-btn"
-                    >
-                      {voting ? 'Votando...' : 'SIM'}
-                    </button>
-                    <button
-                      onClick={() => handleVote('Não')}
-                      disabled={voting}
-                      className="btn btn-danger vote-btn"
-                    >
-                      {voting ? 'Votando...' : 'NÃO'}
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {hasVoted && !success && (
-                <div className="text-center card" style={{ background: 'var(--gray-50)' }}>
-                  <div className="card-body">
-                    <p className="text-lg mb-4">
-                      Você já votou nesta pauta.
-                    </p>
-                    <Link to={`/topic/${topicId}/results`} className="btn btn-info">
-                      Ver Resultados
-                    </Link>
-                  </div>
-                </div>
-              )}
+        <div className="card">
+          <div className="card-body">
+            <div className="flex justify-between items-start mb-4">
+              <h2>{topic.name}</h2>
+              <span className={`badge ${topic.status === 'Aguardando Abertura' ? 'badge-warning' : 
+                                     topic.status === 'Sessão Aberta' ? 'badge-success' : 
+                                     topic.status === 'Votação Encerrada' ? 'badge-danger' : 'badge-secondary'}`}>
+                {topic.status}
+              </span>
             </div>
+            
+            {topic.status !== 'Sessão Aberta' && (
+              <div className="alert alert-warning text-center">
+                <h3>Votação não disponível</h3>
+                <p>Esta pauta não está aberta para votação no momento.</p>
+                <p><strong>Status:</strong> {topic.status}</p>
+              </div>
+            )}
+
+            {topic.status === 'Sessão Aberta' && !hasVoted && !success && (
+              <div>
+                <h3 className="mb-6 text-center">Como você vota?</h3>
+                <div className="voting-buttons">
+                  <button
+                    onClick={() => handleVote('Sim')}
+                    disabled={voteLoading}
+                    className="btn btn-success vote-btn"
+                  >
+                    {voteLoading ? 'Votando...' : 'SIM'}
+                  </button>
+                  <button
+                    onClick={() => handleVote('Não')}
+                    disabled={voteLoading}
+                    className="btn btn-danger vote-btn"
+                  >
+                    {voteLoading ? 'Votando...' : 'NÃO'}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {hasVoted && !success && (
+              <div className="text-center card" style={{ background: 'var(--gray-50)' }}>
+                <div className="card-body">
+                  <p className="text-lg mb-4">
+                    Você já votou nesta pauta.
+                  </p>
+                  <Link to={`/topic/${topicId}/results`} className="btn btn-info">
+                    Ver Resultados
+                  </Link>
+                </div>
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

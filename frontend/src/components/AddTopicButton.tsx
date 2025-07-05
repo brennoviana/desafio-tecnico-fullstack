@@ -1,109 +1,151 @@
 import { useState } from 'react';
-import { createTopic } from '../services/api';
-import { useAppSelector } from '../hooks/redux';
+import { useAppDispatch, useAppSelector } from '../hooks/redux';
+import { createTopic } from '../store/topicsSlice';
 
 interface AddTopicButtonProps {
-  onTopicAdded: () => void;
+  onTopicAdded?: () => void;
 }
 
-export const AddTopicButton: React.FC<AddTopicButtonProps> = ({ onTopicAdded }) => {
-  const [isFormVisible, setIsFormVisible] = useState(false);
+export const AddTopicButton: React.FC<AddTopicButtonProps> = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [topicName, setTopicName] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const dispatch = useAppDispatch();
+  
   const { token } = useAppSelector((state) => state.auth);
+  const { createLoading, createError } = useAppSelector((state) => state.topics);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!topicName.trim()) {
-      setError('Nome do tópico é obrigatório');
+    if (!topicName.trim() || !token) {
       return;
     }
-
-    if (!token) {
-      setError('Sessão expirada. Faça login novamente.');
-      return;
-    }
-
-    setIsLoading(true);
-    setError(null);
 
     try {
-      await createTopic(topicName.trim(), token);
-      setTopicName('');
-      setIsFormVisible(false);
-      onTopicAdded();
+      await dispatch(createTopic(topicName.trim())).unwrap();
+      
+      window.location.reload();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao criar tópico');
-    } finally {
-      setIsLoading(false);
+      console.error('Failed to create topic:', err);
     }
   };
 
   const handleCancel = () => {
-    setIsFormVisible(false);
+    setIsModalOpen(false);
     setTopicName('');
-    setError(null);
   };
 
-  if (!isFormVisible) {
-    return (
+  return (
+    <>
+      {/* The button that stays in the header */}
       <button
-        onClick={() => setIsFormVisible(true)}
+        onClick={() => setIsModalOpen(true)}
         className="btn btn-primary"
       >
         + Adicionar Tópico
       </button>
-    );
-  }
 
-  return (
-    <div className="card" style={{ marginBottom: '1rem' }}>
-      <div className="card-body">
-        <h3 className="mb-4">Novo Tópico</h3>
-        
-        {error && (
-          <div className="alert alert-danger mb-4">
-            {error}
-          </div>
-        )}
+      {/* Modal overlay */}
+      {isModalOpen && (
+        <div 
+          className="modal-overlay"
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000
+          }}
+          onClick={handleCancel}
+        >
+          <div 
+            className="modal-content"
+            style={{
+              backgroundColor: 'white',
+              padding: '2rem',
+              borderRadius: '8px',
+              minWidth: '400px',
+              maxWidth: '500px',
+              width: '90%',
+              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 style={{ marginTop: 0, marginBottom: '1.5rem' }}>Novo Tópico</h3>
+            
+            {createError && (
+              <div className="alert alert-danger" style={{ marginBottom: '1.5rem' }}>
+                {createError}
+              </div>
+            )}
 
-        <form onSubmit={handleSubmit}>
-          <div className="form-group mb-4">
-            <label htmlFor="topicName" className="form-label">
-              Nome do Tópico:
-            </label>
-            <input
-              type="text"
-              id="topicName"
-              value={topicName}
-              onChange={(e) => setTopicName(e.target.value)}
-              className="form-input"
-              placeholder="Ex: Aprovação do novo estatuto"
-              disabled={isLoading}
-            />
-          </div>
+            <form onSubmit={handleSubmit}>
+              <div style={{ marginBottom: '1.5rem' }}>
+                <label htmlFor="topicName" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
+                  Nome do Tópico:
+                </label>
+                <input
+                  type="text"
+                  id="topicName"
+                  value={topicName}
+                  onChange={(e) => setTopicName(e.target.value)}
+                  className="form-input"
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: '1px solid #ddd',
+                    borderRadius: '4px',
+                    fontSize: '1rem'
+                  }}
+                  placeholder="Ex: Aprovação do novo estatuto"
+                  disabled={createLoading}
+                  required
+                  autoFocus
+                />
+              </div>
 
-          <div className="flex gap-2">
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="btn btn-primary"
-            >
-              {isLoading ? 'Criando...' : 'Criar Tópico'}
-            </button>
-            <button
-              type="button"
-              onClick={handleCancel}
-              disabled={isLoading}
-              className="btn btn-secondary"
-            >
-              Cancelar
-            </button>
+              <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                <button
+                  type="button"
+                  onClick={handleCancel}
+                  disabled={createLoading}
+                  className="btn btn-secondary"
+                  style={{
+                    padding: '0.75rem 1.5rem',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    backgroundColor: '#6c757d',
+                    color: 'white'
+                  }}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={createLoading || !topicName.trim()}
+                  className="btn btn-primary"
+                  style={{
+                    padding: '0.75rem 1.5rem',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: createLoading || !topicName.trim() ? 'not-allowed' : 'pointer',
+                    backgroundColor: createLoading || !topicName.trim() ? '#ccc' : '#007bff',
+                    color: 'white'
+                  }}
+                >
+                  {createLoading ? 'Criando...' : 'Criar Tópico'}
+                </button>
+              </div>
+            </form>
           </div>
-        </form>
-      </div>
-    </div>
+        </div>
+      )}
+    </>
   );
 }; 
