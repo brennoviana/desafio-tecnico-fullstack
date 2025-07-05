@@ -7,7 +7,7 @@ import (
 )
 
 type TopicService interface {
-	CreateTopic(name string) error
+	CreateTopic(name string, status ...string) error
 	ListTopics() ([]models.Topic, error)
 }
 
@@ -19,11 +19,17 @@ func NewTopicService(repo topicrepo.TopicRepository) TopicService {
 	return &topicService{repo: repo}
 }
 
-func (s *topicService) CreateTopic(name string) error {
+func (s *topicService) CreateTopic(name string, status ...string) error {
 	if len(name) < 3 {
 		return errors.New("nome da pauta muito curto")
 	}
-	topic := models.Topic{Name: name}
+
+	topicStatus := "PENDING"
+	if len(status) > 0 && status[0] != "" {
+		topicStatus = status[0]
+	}
+
+	topic := models.Topic{Name: name, Status: topicStatus}
 	return s.repo.CreateTopic(topic)
 }
 

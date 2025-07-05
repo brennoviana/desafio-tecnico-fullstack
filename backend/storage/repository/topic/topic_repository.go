@@ -19,12 +19,12 @@ func NewTopicRepository(db *sql.DB) TopicRepository {
 }
 
 func (r *topicRepository) CreateTopic(topic models.Topic) error {
-	_, err := r.db.Exec("INSERT INTO topics (name) VALUES ($1)", topic.Name)
+	_, err := r.db.Exec("INSERT INTO topics (name, status) VALUES ($1, $2)", topic.Name, topic.Status)
 	return err
 }
 
 func (r *topicRepository) ListTopics() ([]models.Topic, error) {
-	rows, err := r.db.Query("SELECT id, name FROM topics")
+	rows, err := r.db.Query("SELECT id, name, status FROM topics")
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +33,7 @@ func (r *topicRepository) ListTopics() ([]models.Topic, error) {
 	topics := []models.Topic{}
 	for rows.Next() {
 		var t models.Topic
-		if err := rows.Scan(&t.ID, &t.Name); err != nil {
+		if err := rows.Scan(&t.ID, &t.Name, &t.Status); err != nil {
 			return nil, err
 		}
 		topics = append(topics, t)
