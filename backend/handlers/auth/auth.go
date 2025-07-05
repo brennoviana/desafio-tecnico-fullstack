@@ -36,7 +36,18 @@ func RegisterHandler(userService user.UserService) gin.HandlerFunc {
 			}
 			return
 		}
-		utils.RespondSuccess(c, nil)
+
+		token, user, err := userService.AuthenticateUser(req.CPF, req.Password)
+		if err != nil {
+			utils.RespondError(c, http.StatusInternalServerError, "erro ao gerar token")
+			return
+		}
+
+		utils.RespondSuccess(c, gin.H{
+			"token": token,
+			"name":  user.Name,
+			"cpf":   user.CPF,
+		})
 	}
 }
 
@@ -50,7 +61,7 @@ func LoginHandler(userService user.UserService) gin.HandlerFunc {
 			utils.RespondError(c, http.StatusBadRequest, "requisição inválida")
 			return
 		}
-		token, err := userService.AuthenticateUser(req.CPF, req.Password)
+		token, user, err := userService.AuthenticateUser(req.CPF, req.Password)
 		if err != nil {
 			if err.Error() == "usuário ou senha inválidos" {
 				utils.RespondError(c, http.StatusUnauthorized, err.Error())
@@ -59,6 +70,10 @@ func LoginHandler(userService user.UserService) gin.HandlerFunc {
 			}
 			return
 		}
-		utils.RespondSuccess(c, gin.H{"token": token})
+		utils.RespondSuccess(c, gin.H{
+			"token": token,
+			"name":  user.Name,
+			"cpf":   user.CPF,
+		})
 	}
 }

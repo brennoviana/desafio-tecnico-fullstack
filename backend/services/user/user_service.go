@@ -12,7 +12,7 @@ import (
 
 type UserService interface {
 	RegisterUser(name, cpf, password string) error
-	AuthenticateUser(cpf, password string) (string, error)
+	AuthenticateUser(cpf, password string) (string, *models.User, error)
 }
 
 type userService struct {
@@ -49,19 +49,19 @@ func (s *userService) RegisterUser(name, cpf, password string) error {
 	return nil
 }
 
-func (s *userService) AuthenticateUser(cpf, password string) (string, error) {
+func (s *userService) AuthenticateUser(cpf, password string) (string, *models.User, error) {
 	user := s.repo.GetUserByCPF(cpf)
 	if user == nil {
-		return "", errors.New("usuário ou senha inválidos")
+		return "", nil, errors.New("usuário ou senha inválidos")
 	}
 	if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)) != nil {
-		return "", errors.New("usuário ou senha inválidos")
+		return "", nil, errors.New("usuário ou senha inválidos")
 	}
 	token, err := s.generateJWT(user.CPF)
 	if err != nil {
-		return "", err
+		return "", nil, err
 	}
-	return token, nil
+	return token, user, nil
 }
 
 func isValidCPF(cpf string) bool {
