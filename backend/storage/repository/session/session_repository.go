@@ -20,7 +20,16 @@ func NewSessionRepository(db *sql.DB) SessionRepository {
 
 func (r *sessionRepository) OpenSession(topicID int, openAt, closeAt int64) error {
 	_, err := r.db.Exec("INSERT INTO sessions (topic_id, open_at, close_at) VALUES ($1, $2, $3)", topicID, openAt, closeAt)
-	return err
+	if err != nil {
+		return err
+	}
+
+	_, err = r.db.Exec("UPDATE topics SET status = 'Sessão Aberta' WHERE id = $1", topicID)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (r *sessionRepository) GetSessionByTopic(topicID int) (*models.Session, error) {
