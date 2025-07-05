@@ -162,17 +162,6 @@ export const SessionManager: React.FC = () => {
                   {opening ? 'Abrindo sessão...' : 'Abrir Sessão de Votação'}
                 </button>
               </div>
-
-              {/* Action Buttons */}
-              <div className="flex gap-4 flex-mobile-col gap-mobile-4">
-                <Link to={`/topic/${topicId}/vote`} className="btn btn-primary btn-lg">
-                  Ir para Votação
-                </Link>
-                
-                <Link to={`/topic/${topicId}/results`} className="btn btn-info btn-lg">
-                  Ver Resultados
-                </Link>
-              </div>
             </div>
           </div>
         )}

@@ -97,19 +97,28 @@ export const Dashboard: React.FC = () => {
             {topics.map((topic) => (
               <div key={topic.id} className="card">
                 <div className="card-body">
-                  <h3 className="mb-4">{topic.name}</h3>
+                  <div className="flex justify-between items-start mb-4">
+                    <h3>{topic.name}</h3>
+                    <span className={`badge ${topic.status === 'Aguardando Abertura' ? 'badge-warning' : 
+                                           topic.status === 'Sessão Aberta' ? 'badge-success' : 
+                                           topic.status === 'Votação Encerrada' ? 'badge-danger' : 'badge-secondary'}`}>
+                      {topic.status}
+                    </span>
+                  </div>
 
                   <div className="flex flex-col gap-2">
-                    {isAuthenticated && (
+                    {isAuthenticated && topic.status === 'Sessão Aberta' && (
                       <Link to={`/topic/${topic.id}/vote`} className="btn btn-primary text-center">
                         Votar
                       </Link>
                     )}
                     
                     {/* Results are always available for everyone */}
-                    <Link to={`/topic/${topic.id}/results`} className="btn btn-info text-center">
-                      Ver Resultados
-                    </Link>
+                    {topic.status === 'Votação Encerrada' && (
+                      <Link to={`/topic/${topic.id}/results`} className="btn btn-info text-center">
+                        Ver Resultados
+                      </Link>
+                    )}
 
                     {isAuthenticated && (
                       <button

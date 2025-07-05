@@ -193,11 +193,6 @@ export const ResultsScreen: React.FC = () => {
 
               {/* Action Buttons */}
               <div className="flex justify-center gap-4 mt-8 flex-mobile-col gap-mobile-4">
-                {isAuthenticated && (
-                  <Link to={`/topic/${topicId}/vote`} className="btn btn-primary btn-lg">
-                    Votar
-                  </Link>
-                )}
                 
                 <button
                   onClick={() => window.location.reload()}

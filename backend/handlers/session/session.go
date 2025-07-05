@@ -19,9 +19,11 @@ func OpenSessionHandler(sessionService session.SessionService) gin.HandlerFunc {
 		var req struct {
 			DurationMinutes int `json:"duration_minutes"`
 		}
+
 		if err := c.ShouldBindJSON(&req); err != nil {
 			req.DurationMinutes = 1
 		}
+		
 		err = sessionService.OpenSession(topicID, req.DurationMinutes)
 		if err != nil {
 			utils.RespondError(c, http.StatusBadRequest, err.Error())

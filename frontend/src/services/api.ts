@@ -18,8 +18,7 @@ export const fetchTopics = async (): Promise<Topic[]> => {
   
   return responseData.data || [];
 };
-
-export const login = async (credentials: LoginCredentials): Promise<User> => {
+  export const login = async (credentials: LoginCredentials): Promise<User> => {
   const response = await fetch(`${API_BASE_URL}/auth/login`, {
     method: 'POST',
     headers: {

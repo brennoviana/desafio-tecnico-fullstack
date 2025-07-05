@@ -3,7 +3,6 @@ package session
 import (
 	"desafio-tecnico-fullstack/backend/models"
 	sessionrepo "desafio-tecnico-fullstack/backend/storage/repository/session"
-	"errors"
 	"time"
 )
 

@@ -347,6 +347,38 @@ a:hover {
   color: #991b1b;
 }
 
+/* General Badge System */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.badge-warning {
+  background: var(--warning-light);
+  color: #92400e;
+}
+
+.badge-success {
+  background: var(--success-light);
+  color: #065f46;
+}
+
+.badge-danger {
+  background: var(--danger-light);
+  color: #991b1b;
+}
+
+.badge-secondary {
+  background: var(--gray-100);
+  color: var(--gray-700);
+}
+
 /* Grid System */
 .grid {
   display: grid;
@@ -380,6 +412,10 @@ a:hover {
 
 .items-center {
   align-items: center;
+}
+
+.items-start {
+  align-items: flex-start;
 }
 
 .justify-center {

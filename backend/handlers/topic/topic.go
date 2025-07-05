@@ -12,7 +12,7 @@ func CreateTopicHandler(topicService topic.TopicService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req struct {
 			Name   string `json:"name"`
-			Status string `json:"status,omitempty"`
+			Status string `json:"status"`
 		}
 
 		if err := c.ShouldBindJSON(&req); err != nil {
@@ -23,22 +23,6 @@ func CreateTopicHandler(topicService topic.TopicService) gin.HandlerFunc {
 		if req.Name == "" {
 			utils.RespondError(c, http.StatusBadRequest, "Nome da pauta é obrigatório")
 			return
-		}
-
-		// Validate status if provided
-		if req.Status != "" {
-			validStatuses := []string{"PENDING", "OPEN", "CLOSED", "FINISHED"}
-			valid := false
-			for _, status := range validStatuses {
-				if req.Status == status {
-					valid = true
-					break
-				}
-			}
-			if !valid {
-				utils.RespondError(c, http.StatusBadRequest, "Status deve ser um dos seguintes: PENDING, OPEN, CLOSED, FINISHED")
-				return
-			}
 		}
 
 		err := topicService.CreateTopic(req.Name, req.Status)
