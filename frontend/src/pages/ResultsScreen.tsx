@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getVoteResult, getSessionStatus } from '../services/api';
+import { getVoteResult } from '../services/api';
 import { useAppSelector } from '../hooks/redux';
 import type { Topic } from '../types/Topic';
 
@@ -13,7 +13,6 @@ export const ResultsScreen: React.FC = () => {
   const { topicId } = useParams<{ topicId: string }>();
   const [topic, setTopic] = useState<Topic | null>(null);
   const [results, setResults] = useState<VoteResults | null>(null);
-  const [sessionData, setSessionData] = useState<{ open_at: number; close_at: number } | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const { isAuthenticated } = useAppSelector((state) => state.auth);
@@ -41,15 +40,6 @@ export const ResultsScreen: React.FC = () => {
 
         setTopic(currentTopic);
 
-        // Load session data
-        try {
-          const session = await getSessionStatus(parseInt(topicId));
-          setSessionData(session);
-        } catch (err) {
-          console.error('Session data not available:', err);
-          setSessionData(null);
-        }
-
         // Load vote results
         const voteResults = await getVoteResult(parseInt(topicId));
         setResults(voteResults);
@@ -65,20 +55,7 @@ export const ResultsScreen: React.FC = () => {
     loadResultsData();
   }, [topicId]);
 
-  const getSessionStatusText = () => {
-    if (!sessionData) {
-      return 'Sessão não iniciada';
-    }
 
-    const now = Date.now() / 1000;
-    if (now < sessionData.open_at) {
-      return 'Aguardando abertura';
-    } else if (now >= sessionData.open_at && now <= sessionData.close_at) {
-      return 'Sessão aberta';
-    } else {
-      return 'Votação encerrada';
-    }
-  };
 
   const getTotalVotes = () => {
     if (!results) return 0;
@@ -123,26 +100,6 @@ export const ResultsScreen: React.FC = () => {
             <div className="card-body">
               <h2 className="mb-6">{topic.name}</h2>
               
-              {/* Session Status */}
-              <div className="card mb-6" style={{ background: 'var(--gray-50)' }}>
-                <div className="card-body">
-                  <h3 className="mb-2">Status da Sessão</h3>
-                  <p className="font-semibold mb-2">
-                    {getSessionStatusText()}
-                  </p>
-                  {sessionData && (
-                    <div className="text-sm text-muted">
-                      <p className="mb-1">
-                        <strong>Abertura:</strong> {new Date(sessionData.open_at * 1000).toLocaleString()}
-                      </p>
-                      <p>
-                        <strong>Fechamento:</strong> {new Date(sessionData.close_at * 1000).toLocaleString()}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-
               {/* Vote Results */}
               {results ? (
                 <div>
@@ -236,12 +193,10 @@ export const ResultsScreen: React.FC = () => {
 
               {/* Action Buttons */}
               <div className="flex justify-center gap-4 mt-8 flex-mobile-col gap-mobile-4">
-                {sessionData && (
-                  Date.now() / 1000 >= sessionData.open_at && Date.now() / 1000 <= sessionData.close_at && isAuthenticated && (
-                    <Link to={`/topic/${topicId}/vote`} className="btn btn-primary btn-lg">
-                      Votar Agora
-                    </Link>
-                  )
+                {isAuthenticated && (
+                  <Link to={`/topic/${topicId}/vote`} className="btn btn-primary btn-lg">
+                    Votar
+                  </Link>
                 )}
                 
                 <button

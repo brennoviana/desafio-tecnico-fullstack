@@ -150,25 +150,7 @@ export const openVotingSession = async (topicId: number, durationMinutes: number
   }
 };
 
-export const getSessionStatus = async (topicId: number): Promise<{open_at: number, close_at: number} | null> => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/topics/${topicId}/session`);
-    
-    if (!response.ok) {
-      return null;
-    }
-    
-    const responseData = await response.json();
-    
-    if (responseData.status === 'error') {
-      return null;
-    }
-    
-    return responseData.data;
-  } catch {
-    return null;
-  }
-};
+
 
 export const createTopic = async (name: string, token?: string): Promise<Topic> => {
   const authToken = token || getAuthToken();

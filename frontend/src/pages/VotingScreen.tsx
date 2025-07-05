@@ -1,19 +1,17 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { vote, getSessionStatus } from '../services/api';
+import { vote } from '../services/api';
 import { useAppSelector } from '../hooks/redux';
 import type { Topic } from '../types/Topic';
 
 export const VotingScreen: React.FC = () => {
   const { topicId } = useParams<{ topicId: string }>();
   const [topic, setTopic] = useState<Topic | null>(null);
-  const [sessionData, setSessionData] = useState<{ open_at: number; close_at: number } | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [voting, setVoting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
   const [hasVoted, setHasVoted] = useState<boolean>(false);
-  const [timeRemaining, setTimeRemaining] = useState<number>(0);
   const { user, isAuthenticated } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
 
@@ -23,7 +21,7 @@ export const VotingScreen: React.FC = () => {
       return;
     }
 
-    const loadTopicAndSession = async () => {
+    const loadTopic = async () => {
       if (!topicId) {
         setError('ID do tópico não encontrado');
         setLoading(false);
@@ -31,29 +29,6 @@ export const VotingScreen: React.FC = () => {
       }
 
       try {
-        const session = await getSessionStatus(parseInt(topicId));
-        if (!session) {
-          setError('Sessão de votação não encontrada');
-          setLoading(false);
-          return;
-        }
-
-        const now = Date.now() / 1000;
-        if (now < session.open_at) {
-          setError('Sessão de votação ainda não foi aberta');
-          setLoading(false);
-          return;
-        }
-
-        if (now > session.close_at) {
-          setError('Sessão de votação já foi encerrada');
-          setLoading(false);
-          return;
-        }
-
-        setSessionData(session);
-        setTimeRemaining(session.close_at - now);
-
         const response = await fetch(`http://localhost:8080/api/topics`);
         const responseData = await response.json();
         const topicsData = responseData.data || [];
@@ -74,21 +49,10 @@ export const VotingScreen: React.FC = () => {
       }
     };
 
-    loadTopicAndSession();
+    loadTopic();
   }, [topicId, isAuthenticated, navigate]);
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      if (timeRemaining > 0) {
-        setTimeRemaining(prev => prev - 1);
-      } else {
-        setError('Sessão de votação expirou');
-        clearInterval(timer);
-      }
-    }, 1000);
 
-    return () => clearInterval(timer);
-  }, [timeRemaining]);
 
   const handleVote = async (choice: 'Sim' | 'Não') => {
     if (!topicId || hasVoted) return;
@@ -112,11 +76,7 @@ export const VotingScreen: React.FC = () => {
     }
   };
 
-  const formatTime = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = Math.floor(seconds % 60);
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-  };
+
 
   if (loading) {
     return (
@@ -160,13 +120,6 @@ export const VotingScreen: React.FC = () => {
         {error && (
           <div className="alert alert-danger">
             {error}
-            {error.includes('expirou') || error.includes('encerrada') ? (
-              <div className="mt-4">
-                <Link to={`/topic/${topicId}/results`} className="btn btn-info">
-                  Ver Resultados
-                </Link>
-              </div>
-            ) : null}
           </div>
         )}
 
@@ -186,18 +139,7 @@ export const VotingScreen: React.FC = () => {
             <div className="card-body">
               <h2 className="mb-4">{topic.name}</h2>
               
-              {sessionData && timeRemaining > 0 && (
-                <div className="timer-card">
-                  <p className="mb-2">
-                    <span className="timer-time">⏰ Tempo restante: {formatTime(timeRemaining)}</span>
-                  </p>
-                  <p className="text-sm">
-                    Sessão encerra às: {new Date(sessionData.close_at * 1000).toLocaleString()}
-                  </p>
-                </div>
-              )}
-
-              {!hasVoted && !success && timeRemaining > 0 && !error && (
+              {!hasVoted && !success && !error && (
                 <div>
                   <h3 className="mb-6 text-center">Como você vota?</h3>
                   <div className="voting-buttons">

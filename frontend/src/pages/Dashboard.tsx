@@ -1,61 +1,23 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { fetchTopics, getSessionStatus } from '../services/api';
+import { fetchTopics } from '../services/api';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import { logoutUser } from '../store/authSlice';
 import { AddTopicButton } from '../components/AddTopicButton';
 import type { Topic } from '../types/Topic';
 
-interface TopicWithStatus extends Topic {
-  status: 'Awaiting Opening' | 'Open Session' | 'Voting Closed';
-  sessionData?: {
-    open_at: number;
-    close_at: number;
-  } | null;
-}
-
 export const Dashboard: React.FC = () => {
-  const [topics, setTopics] = useState<TopicWithStatus[]>([]);
+  const [topics, setTopics] = useState<Topic[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const dispatch = useAppDispatch();
   const { user, isAuthenticated } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
 
-  const loadTopicsWithStatus = async () => {
+  const loadTopics = async () => {
     try {
       const topicsData = await fetchTopics();
-      const topicsWithStatus = await Promise.all(
-        topicsData.map(async (topic) => {
-          try {
-            const sessionData = await getSessionStatus(topic.id);
-            const now = Date.now() / 1000;
-            
-            let status: 'Awaiting Opening' | 'Open Session' | 'Voting Closed';
-            if (!sessionData) {
-              status = 'Awaiting Opening';
-            } else if (now >= sessionData.open_at && now <= sessionData.close_at) {
-              status = 'Open Session';
-            } else if (now > sessionData.close_at) {
-              status = 'Voting Closed';
-            } else {
-              status = 'Awaiting Opening';
-            }
-            
-            return {
-              ...topic,
-              status,
-              sessionData
-            };
-          } catch {
-            return {
-              ...topic,
-              status: 'Awaiting Opening' as const
-            };
-          }
-        })
-      );
-      setTopics(topicsWithStatus);
+      setTopics(topicsData);
     } catch (err) {
       console.error(err);
       setError('Erro ao carregar tópicos.');
@@ -65,7 +27,7 @@ export const Dashboard: React.FC = () => {
   };
 
   useEffect(() => {
-    loadTopicsWithStatus();
+    loadTopics();
   }, []);
 
   const handleLogout = () => {
@@ -74,7 +36,7 @@ export const Dashboard: React.FC = () => {
   };
 
   const handleTopicAdded = () => {
-    loadTopicsWithStatus();
+    loadTopics();
   };
 
   if (loading) {
@@ -136,46 +98,25 @@ export const Dashboard: React.FC = () => {
               <div key={topic.id} className="card">
                 <div className="card-body">
                   <h3 className="mb-4">{topic.name}</h3>
-                  
-                  <div className="mb-4">
-                    <span className={`status-badge ${
-                      topic.status === 'Awaiting Opening' ? 'status-awaiting' :
-                      topic.status === 'Open Session' ? 'status-open' : 'status-closed'
-                    }`}>
-                      {topic.status}
-                    </span>
-                  </div>
-
-                  {topic.sessionData && (
-                    <div className="mb-4 text-sm text-muted">
-                      <p className="mb-2">
-                        <strong>Abertura:</strong> {new Date(topic.sessionData.open_at * 1000).toLocaleString()}
-                      </p>
-                      <p>
-                        <strong>Fechamento:</strong> {new Date(topic.sessionData.close_at * 1000).toLocaleString()}
-                      </p>
-                    </div>
-                  )}
 
                   <div className="flex flex-col gap-2">
-                    {topic.status === 'Open Session' && isAuthenticated && (
+                    {isAuthenticated && (
                       <Link to={`/topic/${topic.id}/vote`} className="btn btn-primary text-center">
                         Votar
                       </Link>
                     )}
                     
-                    {topic.status === 'Voting Closed' && (
-                      <Link to={`/topic/${topic.id}/results`} className="btn btn-info text-center">
-                        Ver Resultados
-                      </Link>
-                    )}
+                    {/* Results are always available for everyone */}
+                    <Link to={`/topic/${topic.id}/results`} className="btn btn-info text-center">
+                      Ver Resultados
+                    </Link>
 
-                    {topic.status === 'Awaiting Opening' && isAuthenticated && (
+                    {isAuthenticated && (
                       <button
                         onClick={() => navigate(`/topic/${topic.id}/manage`)}
                         className="btn btn-warning"
                       >
-                        Abrir Sessão
+                        Gerenciar Sessão
                       </button>
                     )}
                   </div>

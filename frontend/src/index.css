@@ -435,6 +435,18 @@ a:hover {
   color: var(--gray-500);
 }
 
+.text-success {
+  color: var(--success);
+}
+
+.text-danger {
+  color: var(--danger);
+}
+
+.text-secondary {
+  color: var(--secondary);
+}
+
 /* Spacing Utilities */
 .mb-2 {
   margin-bottom: var(--space-2);
