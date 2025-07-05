@@ -9,7 +9,6 @@ export const fetchTopics = async (): Promise<Topic[]> => {
   const responseData = await response.json();
   
   if (!response.ok) {
-    // If the response has an error message, use it; otherwise use a generic message
     throw new Error(responseData.error || `HTTP error! status: ${response.status}`);
   }
   
@@ -20,7 +19,6 @@ export const fetchTopics = async (): Promise<Topic[]> => {
   return responseData.data || [];
 };
 
-// Authentication API functions
 export const login = async (credentials: LoginCredentials): Promise<User> => {
   const response = await fetch(`${API_BASE_URL}/auth/login`, {
     method: 'POST',
@@ -33,7 +31,6 @@ export const login = async (credentials: LoginCredentials): Promise<User> => {
   const responseData = await response.json();
 
   if (!response.ok) {
-    // If the response has an error message, use it; otherwise use a generic message
     throw new Error(responseData.error || `HTTP error! status: ${response.status}`);
   }
 
@@ -41,7 +38,6 @@ export const login = async (credentials: LoginCredentials): Promise<User> => {
     throw new Error(responseData.error);
   }
 
-  // Store the token if provided
   if (responseData.token) {
     localStorage.setItem('auth_token', responseData.token);
   }
@@ -61,7 +57,6 @@ export const register = async (credentials: RegisterCredentials): Promise<User> 
   const responseData = await response.json();
 
   if (!response.ok) {
-    // If the response has an error message, use it; otherwise use a generic message
     throw new Error(responseData.error || `HTTP error! status: ${response.status}`);
   }
 
@@ -69,7 +64,6 @@ export const register = async (credentials: RegisterCredentials): Promise<User> 
     throw new Error(responseData.error);
   }
 
-  // Store the token if provided
   if (responseData.token) {
     localStorage.setItem('auth_token', responseData.token);
   }
@@ -89,7 +83,6 @@ export const isAuthenticated = (): boolean => {
   return !!getAuthToken();
 };
 
-// Voting API functions
 export const vote = async (topicId: number, choice: 'Sim' | 'Não'): Promise<void> => {
   const token = getAuthToken();
   const response = await fetch(`${API_BASE_URL}/topics/${topicId}/vote`, {
@@ -147,5 +140,25 @@ export const openVotingSession = async (topicId: number, durationMinutes: number
 
   if (responseData.status === 'error') {
     throw new Error(responseData.error);
+  }
+};
+
+export const getSessionStatus = async (topicId: number): Promise<{open_at: number, close_at: number} | null> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/topics/${topicId}/session`);
+    
+    if (!response.ok) {
+      return null;
+    }
+    
+    const responseData = await response.json();
+    
+    if (responseData.status === 'error') {
+      return null;
+    }
+    
+    return responseData.data;
+  } catch {
+    return null;
   }
 };

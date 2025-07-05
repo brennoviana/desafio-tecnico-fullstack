@@ -2,7 +2,10 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Provider } from 'react-redux';
 import { store } from './store';
 import { AuthInitializer } from './components/AuthInitializer';
-import { TopicsPage } from './pages/TopicsPage';
+import { Dashboard } from './pages/Dashboard';
+import { VotingScreen } from './pages/VotingScreen';
+import { ResultsScreen } from './pages/ResultsScreen';
+import { SessionManager } from './pages/SessionManager';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 
@@ -12,18 +15,22 @@ function App() {
       <AuthInitializer>
         <Router>
           <Routes>
-            {/* Public routes */}
+            {/* Authentication routes */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             
-            {/* Public routes */}
-            <Route path="/topics" element={<TopicsPage />} />
+            {/* Main application routes */}
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/topic/:topicId/vote" element={<VotingScreen />} />
+            <Route path="/topic/:topicId/results" element={<ResultsScreen />} />
+            <Route path="/topic/:topicId/manage" element={<SessionManager />} />
             
-            {/* Redirect root to topics */}
-            <Route path="/" element={<Navigate to="/topics" replace />} />
+            {/* Redirect root to dashboard */}
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/topics" element={<Navigate to="/dashboard" replace />} />
             
             {/* Fallback for unknown routes */}
-            <Route path="*" element={<Navigate to="/topics" replace />} />
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </Router>
       </AuthInitializer>

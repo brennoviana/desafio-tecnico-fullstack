@@ -21,7 +21,6 @@ export const RegisterPage: React.FC = () => {
   }, [isAuthenticated, navigate]);
 
   useEffect(() => {
-    // Clear error when component unmounts
     return () => {
       dispatch(clearError());
     };
@@ -42,128 +41,91 @@ export const RegisterPage: React.FC = () => {
   };
 
   return (
-    <div style={{ 
-      maxWidth: '400px', 
-      margin: '2rem auto', 
-      padding: '2rem',
-      border: '1px solid #ddd',
-      borderRadius: '8px',
-      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-    }}>
-      <h1 style={{ textAlign: 'center', marginBottom: '2rem' }}>Registrar</h1>
-      
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="name" style={{ display: 'block', marginBottom: '0.5rem' }}>
-            Nome:
-          </label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={credentials.name}
-            onChange={handleChange}
-            required
-            style={{
-              width: '100%',
-              padding: '0.5rem',
-              border: '1px solid #ddd',
-              borderRadius: '4px',
-              fontSize: '1rem'
-            }}
-          />
-        </div>
+    <div className="centered-page">
+      <div className="card" style={{ width: '100%', maxWidth: '400px' }}>
+        <div className="card-body">
+          <h1 className="text-center mb-6">Registrar</h1>
+          
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label htmlFor="name" className="form-label">
+                Nome:
+              </label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={credentials.name}
+                onChange={handleChange}
+                required
+                className="form-input"
+              />
+            </div>
 
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="cpf" style={{ display: 'block', marginBottom: '0.5rem' }}>
-            CPF:
-          </label>
-          <input
-            type="text"
-            id="cpf"
-            name="cpf"
-            value={credentials.cpf}
-            onChange={handleChange}
-            required
-            pattern="[0-9]{11}"
-            placeholder="12345678900"
-            style={{
-              width: '100%',
-              padding: '0.5rem',
-              border: '1px solid #ddd',
-              borderRadius: '4px',
-              fontSize: '1rem'
-            }}
-          />
-          <small style={{ color: '#666', fontSize: '0.875rem' }}>
-            Digite apenas números (11 dígitos)
-          </small>
-        </div>
+            <div className="form-group">
+              <label htmlFor="cpf" className="form-label">
+                CPF:
+              </label>
+              <input
+                type="text"
+                id="cpf"
+                name="cpf"
+                value={credentials.cpf}
+                onChange={handleChange}
+                required
+                pattern="[0-9]{11}"
+                placeholder="12345678900"
+                className="form-input"
+              />
+              <small className="text-muted text-sm">
+                Digite apenas números (11 dígitos)
+              </small>
+            </div>
 
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="password" style={{ display: 'block', marginBottom: '0.5rem' }}>
-            Senha:
-          </label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={credentials.password}
-            onChange={handleChange}
-            required
-            minLength={6}
-            style={{
-              width: '100%',
-              padding: '0.5rem',
-              border: '1px solid #ddd',
-              borderRadius: '4px',
-              fontSize: '1rem'
-            }}
-          />
-          <small style={{ color: '#666', fontSize: '0.875rem' }}>
-            Mínimo 6 caracteres
-          </small>
-        </div>
+            <div className="form-group">
+              <label htmlFor="password" className="form-label">
+                Senha:
+              </label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={credentials.password}
+                onChange={handleChange}
+                required
+                minLength={6}
+                className="form-input"
+              />
+              <small className="text-muted text-sm">
+                Mínimo 6 caracteres
+              </small>
+            </div>
 
-        {error && (
-          <div style={{ 
-            color: 'red', 
-            marginBottom: '1rem', 
-            padding: '0.5rem',
-            backgroundColor: '#ffebee',
-            borderRadius: '4px',
-            border: '1px solid #ffcdd2'
-          }}>
-            {error}
+            {error && (
+              <div className="alert alert-danger">
+                {error}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn btn-success btn-lg"
+              style={{ width: '100%' }}
+            >
+              {loading ? 'Registrando...' : 'Registrar'}
+            </button>
+          </form>
+
+          <div className="text-center mt-6">
+            <p className="text-muted">
+              Já tem uma conta?{' '}
+              <Link to="/login" className="text-primary">
+                Faça login
+              </Link>
+            </p>
           </div>
-        )}
-
-        <button
-          type="submit"
-          disabled={loading}
-          style={{
-            width: '100%',
-            padding: '0.75rem',
-            backgroundColor: '#28a745',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            fontSize: '1rem',
-            cursor: loading ? 'not-allowed' : 'pointer',
-            opacity: loading ? 0.6 : 1
-          }}
-        >
-          {loading ? 'Registrando...' : 'Registrar'}
-        </button>
-      </form>
-
-      <div style={{ textAlign: 'center', marginTop: '1rem' }}>
-        <p>
-          Já tem uma conta?{' '}
-          <Link to="/login" style={{ color: '#007bff', textDecoration: 'none' }}>
-            Faça login
-          </Link>
-        </p>
+        </div>
       </div>
     </div>
   );
