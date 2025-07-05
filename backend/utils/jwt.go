@@ -8,27 +8,27 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-func GenerateJWT(cpf string) (string, error) {
+func GenerateJWT(userID int) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"cpf": cpf,
-		"exp": time.Now().Add(time.Hour * 1).Unix(),
+		"user_id": userID,
+		"exp":     time.Now().Add(time.Hour * 1).Unix(),
 	})
 	return token.SignedString([]byte(config.AppConfig.JWT.Secret))
 }
 
-func ValidateJWT(tokenString string) (string, error) {
+func ValidateJWT(tokenString string) (int, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return []byte(config.AppConfig.JWT.Secret), nil
 	})
 	if err != nil {
-		return "", err
+		return 0, err
 	}
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		cpf, ok := claims["cpf"].(string)
+		userID, ok := claims["user_id"].(float64)
 		if !ok {
-			return "", jwt.ErrTokenMalformed
+			return 0, jwt.ErrTokenMalformed
 		}
-		return cpf, nil
+		return int(userID), nil
 	}
-	return "", err
+	return 0, err
 }

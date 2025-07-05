@@ -16,15 +16,23 @@ func VoteHandler(voteService vote.VoteService) gin.HandlerFunc {
 			utils.RespondError(c, http.StatusBadRequest, "topic_id inválido")
 			return
 		}
+
 		var req struct {
 			Choice string `json:"choice"`
 		}
+
 		if err := c.ShouldBindJSON(&req); err != nil {
 			utils.RespondError(c, http.StatusBadRequest, "voto deve ser 'Sim' ou 'Não'")
 			return
 		}
-		cpf := c.GetString("cpf")
-		err = voteService.Vote(topicID, cpf, req.Choice)
+
+		userID, exists := c.Get("user_id")
+		if !exists {
+			utils.RespondError(c, http.StatusUnauthorized, "usuário não autenticado")
+			return
+		}
+
+		err = voteService.Vote(topicID, userID.(int), req.Choice)
 		if err != nil {
 			utils.RespondError(c, http.StatusBadRequest, err.Error())
 			return

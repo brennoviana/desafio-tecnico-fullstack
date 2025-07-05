@@ -3,6 +3,6 @@ package models
 type Vote struct {
 	ID      int    `json:"id"`
 	TopicID int    `json:"topic_id"`
-	UserCPF string `json:"user_cpf"`
+	UserID  int    `json:"user_id"`
 	Choice  string `json:"choice"`
 }

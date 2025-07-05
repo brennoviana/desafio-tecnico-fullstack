@@ -17,7 +17,7 @@ type UserService interface {
 
 type userService struct {
 	repo        user.UserRepository
-	generateJWT func(cpf string) (string, error)
+	generateJWT func(userID int) (string, error)
 }
 
 func NewUserService(repo user.UserRepository) UserService {
@@ -57,7 +57,7 @@ func (s *userService) AuthenticateUser(cpf, password string) (string, *models.Us
 	if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)) != nil {
 		return "", nil, errors.New("usuário ou senha inválidos")
 	}
-	token, err := s.generateJWT(user.CPF)
+	token, err := s.generateJWT(user.ID)
 	if err != nil {
 		return "", nil, err
 	}

@@ -25,7 +25,7 @@ func (r *userRepository) AddUser(u models.User) error {
 
 func (r *userRepository) GetUserByCPF(cpf string) *models.User {
 	var user models.User
-	err := r.db.QueryRow("SELECT name, cpf, password FROM users WHERE cpf = $1", cpf).Scan(&user.Name, &user.CPF, &user.Password)
+	err := r.db.QueryRow("SELECT id, name, cpf, password FROM users WHERE cpf = $1", cpf).Scan(&user.ID, &user.Name, &user.CPF, &user.Password)
 	if err != nil {
 		return nil
 	}

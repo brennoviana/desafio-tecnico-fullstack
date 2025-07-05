@@ -24,9 +24,9 @@ CREATE TABLE sessions (
 CREATE TABLE votes (
     id SERIAL PRIMARY KEY,
     topic_id INTEGER NOT NULL REFERENCES topics(id),
-    user_cpf TEXT NOT NULL REFERENCES users(cpf),
+    user_id INTEGER NOT NULL REFERENCES users(id),
     choice TEXT NOT NULL,
-    UNIQUE(topic_id, user_cpf)
+    UNIQUE(topic_id, user_id)
 ); 
 
 -- +goose Down

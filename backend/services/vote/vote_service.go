@@ -9,7 +9,7 @@ import (
 )
 
 type VoteService interface {
-	Vote(topicID int, userCPF, choice string) error
+	Vote(topicID int, userID int, choice string) error
 	GetResult(topicID int) (yes int, no int, err error)
 }
 
@@ -22,7 +22,7 @@ func NewVoteService(voteRepo voteRepoPkg.VoteRepository, sessionRepo sessionRepo
 	return &voteService{voteRepo: voteRepo, sessionRepo: sessionRepo}
 }
 
-func (s *voteService) Vote(topicID int, userCPF, choice string) error {
+func (s *voteService) Vote(topicID int, userID int, choice string) error {
 	if choice != "Sim" && choice != "Não" {
 		return errors.New("voto deve ser 'Sim' ou 'Não'")
 	}
@@ -34,14 +34,14 @@ func (s *voteService) Vote(topicID int, userCPF, choice string) error {
 	if now < session.OpenAt || now > session.CloseAt {
 		return errors.New("sessão de votação não está aberta")
 	}
-	voted, err := s.voteRepo.HasUserVoted(topicID, userCPF)
+	voted, err := s.voteRepo.HasUserVoted(topicID, userID)
 	if err != nil {
 		return err
 	}
 	if voted {
 		return errors.New("usuário já votou nesta pauta")
 	}
-	vote := models.Vote{TopicID: topicID, UserCPF: userCPF, Choice: choice}
+	vote := models.Vote{TopicID: topicID, UserID: userID, Choice: choice}
 	return s.voteRepo.RegisterVote(vote)
 }
 

@@ -22,11 +22,11 @@ func (m *mockUserRepo) AddUser(u models.User) error {
 
 func TestAuthenticateUser_Success(t *testing.T) {
 	hash, _ := bcrypt.GenerateFromPassword([]byte("senha123"), bcrypt.DefaultCost)
-	user := &models.User{CPF: "12345678901", Password: string(hash)}
+	user := &models.User{ID: 1, CPF: "12345678901", Password: string(hash)}
 	repo := &mockUserRepo{user: user}
 	service := &userService{
 		repo:        repo,
-		generateJWT: func(cpf string) (string, error) { return "token123", nil },
+		generateJWT: func(userID int) (string, error) { return "token123", nil },
 	}
 
 	token, _, err := service.AuthenticateUser("12345678901", "senha123")
@@ -42,7 +42,7 @@ func TestAuthenticateUser_UserNotFound(t *testing.T) {
 	repo := &mockUserRepo{user: nil}
 	service := &userService{
 		repo:        repo,
-		generateJWT: func(cpf string) (string, error) { return "token123", nil },
+		generateJWT: func(userID int) (string, error) { return "token123", nil },
 	}
 
 	_, _, err := service.AuthenticateUser("00000000000", "senha123")
@@ -53,11 +53,11 @@ func TestAuthenticateUser_UserNotFound(t *testing.T) {
 
 func TestAuthenticateUser_WrongPassword(t *testing.T) {
 	hash, _ := bcrypt.GenerateFromPassword([]byte("senha123"), bcrypt.DefaultCost)
-	user := &models.User{CPF: "12345678901", Password: string(hash)}
+	user := &models.User{ID: 1, CPF: "12345678901", Password: string(hash)}
 	repo := &mockUserRepo{user: user}
 	service := &userService{
 		repo:        repo,
-		generateJWT: func(cpf string) (string, error) { return "token123", nil },
+		generateJWT: func(userID int) (string, error) { return "token123", nil },
 	}
 
 	_, _, err := service.AuthenticateUser("12345678901", "errada")
