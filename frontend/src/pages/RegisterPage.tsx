@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../hooks/redux';
+import { registerUser, clearError } from '../store/authSlice';
 import type { RegisterCredentials } from '../types/Auth';
 
 export const RegisterPage: React.FC = () => {
@@ -9,20 +10,27 @@ export const RegisterPage: React.FC = () => {
     cpf: '',
     password: '',
   });
-  const [error, setError] = useState<string | null>(null);
-  const { register, loading } = useAuth();
+  const dispatch = useAppDispatch();
+  const { loading, error, isAuthenticated } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/topics');
+    }
+  }, [isAuthenticated, navigate]);
+
+  useEffect(() => {
+    // Clear error when component unmounts
+    return () => {
+      dispatch(clearError());
+    };
+  }, [dispatch]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-
-    try {
-      await register(credentials);
-      navigate('/topics');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao registrar');
-    }
+    dispatch(clearError());
+    dispatch(registerUser(credentials));
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

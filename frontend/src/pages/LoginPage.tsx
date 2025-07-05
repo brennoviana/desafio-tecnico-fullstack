@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../hooks/redux';
+import { loginUser, clearError } from '../store/authSlice';
 import type { LoginCredentials } from '../types/Auth';
 
 export const LoginPage: React.FC = () => {
@@ -8,20 +9,26 @@ export const LoginPage: React.FC = () => {
     cpf: '',
     password: '',
   });
-  const [error, setError] = useState<string | null>(null);
-  const { login, loading } = useAuth();
+  const dispatch = useAppDispatch();
+  const { loading, error, isAuthenticated } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/topics');
+    }
+  }, [isAuthenticated, navigate]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearError());
+    };
+  }, [dispatch]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-
-    try {
-      await login(credentials);
-      navigate('/topics');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao fazer login');
-    }
+    dispatch(clearError());
+    dispatch(loginUser(credentials));
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

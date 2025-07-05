@@ -22,12 +22,12 @@ type Services struct {
 }
 
 func RegisterRoutes(router *gin.Engine, deps *Services) {
-	router.POST("/register", auth.RegisterHandler(deps.UserService))
-	router.POST("/login", auth.LoginHandler(deps.UserService))
+	router.POST("/api/auth/register", auth.RegisterHandler(deps.UserService))
+	router.POST("/api/auth/login", auth.LoginHandler(deps.UserService))
 
-	router.POST("/topics", middleware.AuthMiddleware(), topichandler.CreateTopicHandler(deps.TopicService))
-	router.GET("/topics", topichandler.ListTopicsHandler(deps.TopicService))
-	router.POST("/topics/:topic_id/session", middleware.AuthMiddleware(), sessionhandler.OpenSessionHandler(deps.SessionService))
-	router.POST("/topics/:topic_id/vote", middleware.AuthMiddleware(), votehandler.VoteHandler(deps.VoteService))
-	router.GET("/topics/:topic_id/result", votehandler.ResultHandler(deps.VoteService))
+	router.POST("/api/topics", middleware.AuthMiddleware(), topichandler.CreateTopicHandler(deps.TopicService))
+	router.GET("/api/topics", topichandler.ListTopicsHandler(deps.TopicService))
+	router.POST("/api/topics/:topic_id/session", middleware.AuthMiddleware(), sessionhandler.OpenSessionHandler(deps.SessionService))
+	router.POST("/api/topics/:topic_id/vote", middleware.AuthMiddleware(), votehandler.VoteHandler(deps.VoteService))
+	router.GET("/api/topics/:topic_id/result", votehandler.ResultHandler(deps.VoteService))
 }
