@@ -25,6 +25,9 @@ export const loginUser = createAsyncThunk(
     try {
       const user = await apiLogin(credentials);
       const token = getAuthToken();
+      if (!token) {
+        throw new Error('Token not received from server');
+      }
       return { user, token };
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Login failed');
@@ -38,6 +41,9 @@ export const registerUser = createAsyncThunk(
     try {
       const user = await apiRegister(credentials);
       const token = getAuthToken();
+      if (!token) {
+        throw new Error('Token not received from server');
+      }
       return { user, token };
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Registration failed');

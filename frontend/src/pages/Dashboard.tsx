@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { fetchTopics, getSessionStatus } from '../services/api';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import { logoutUser } from '../store/authSlice';
+import { AddTopicButton } from '../components/AddTopicButton';
 import type { Topic } from '../types/Topic';
 
 interface TopicWithStatus extends Topic {
@@ -21,49 +22,49 @@ export const Dashboard: React.FC = () => {
   const { user, isAuthenticated } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const loadTopicsWithStatus = async () => {
-      try {
-        const topicsData = await fetchTopics();
-        const topicsWithStatus = await Promise.all(
-          topicsData.map(async (topic) => {
-            try {
-              const sessionData = await getSessionStatus(topic.id);
-              const now = Date.now() / 1000;
-              
-              let status: 'Awaiting Opening' | 'Open Session' | 'Voting Closed';
-              if (!sessionData) {
-                status = 'Awaiting Opening';
-              } else if (now >= sessionData.open_at && now <= sessionData.close_at) {
-                status = 'Open Session';
-              } else if (now > sessionData.close_at) {
-                status = 'Voting Closed';
-              } else {
-                status = 'Awaiting Opening';
-              }
-              
-              return {
-                ...topic,
-                status,
-                sessionData
-              };
-            } catch {
-              return {
-                ...topic,
-                status: 'Awaiting Opening' as const
-              };
+  const loadTopicsWithStatus = async () => {
+    try {
+      const topicsData = await fetchTopics();
+      const topicsWithStatus = await Promise.all(
+        topicsData.map(async (topic) => {
+          try {
+            const sessionData = await getSessionStatus(topic.id);
+            const now = Date.now() / 1000;
+            
+            let status: 'Awaiting Opening' | 'Open Session' | 'Voting Closed';
+            if (!sessionData) {
+              status = 'Awaiting Opening';
+            } else if (now >= sessionData.open_at && now <= sessionData.close_at) {
+              status = 'Open Session';
+            } else if (now > sessionData.close_at) {
+              status = 'Voting Closed';
+            } else {
+              status = 'Awaiting Opening';
             }
-          })
-        );
-        setTopics(topicsWithStatus);
-      } catch (err) {
-        console.error(err);
-        setError('Erro ao carregar tópicos.');
-      } finally {
-        setLoading(false);
-      }
-    };
+            
+            return {
+              ...topic,
+              status,
+              sessionData
+            };
+          } catch {
+            return {
+              ...topic,
+              status: 'Awaiting Opening' as const
+            };
+          }
+        })
+      );
+      setTopics(topicsWithStatus);
+    } catch (err) {
+      console.error(err);
+      setError('Erro ao carregar tópicos.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     loadTopicsWithStatus();
   }, []);
 
@@ -72,7 +73,9 @@ export const Dashboard: React.FC = () => {
     navigate('/dashboard');
   };
 
-
+  const handleTopicAdded = () => {
+    loadTopicsWithStatus();
+  };
 
   if (loading) {
     return (
@@ -96,7 +99,10 @@ export const Dashboard: React.FC = () => {
                 </p>
               )}
             </div>
-            <div>
+            <div className="flex gap-2">
+              {isAuthenticated && (
+                <AddTopicButton onTopicAdded={handleTopicAdded} />
+              )}
               {isAuthenticated ? (
                 <button onClick={handleLogout} className="btn btn-danger">
                   Logout

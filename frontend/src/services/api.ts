@@ -38,11 +38,14 @@ export const login = async (credentials: LoginCredentials): Promise<User> => {
     throw new Error(responseData.error);
   }
 
-  if (responseData.token) {
-    localStorage.setItem('auth_token', responseData.token);
+  if (responseData.data?.token) {
+    localStorage.setItem('auth_token', responseData.data.token);
   }
 
-  return responseData.data;
+  const userData = { ...responseData.data };
+  delete userData.token;
+  
+  return userData;
 };
 
 export const register = async (credentials: RegisterCredentials): Promise<User> => {
@@ -64,11 +67,14 @@ export const register = async (credentials: RegisterCredentials): Promise<User> 
     throw new Error(responseData.error);
   }
 
-  if (responseData.token) {
-    localStorage.setItem('auth_token', responseData.token);
+  if (responseData.data?.token) {
+    localStorage.setItem('auth_token', responseData.data.token);
   }
 
-  return responseData.data;
+  const userData = { ...responseData.data };
+  delete userData.token;
+  
+  return userData;
 };
 
 export const logout = (): void => {
@@ -82,6 +88,7 @@ export const getAuthToken = (): string | null => {
 export const isAuthenticated = (): boolean => {
   return !!getAuthToken();
 };
+
 
 export const vote = async (topicId: number, choice: 'Sim' | 'Não'): Promise<void> => {
   const token = getAuthToken();
@@ -161,4 +168,33 @@ export const getSessionStatus = async (topicId: number): Promise<{open_at: numbe
   } catch {
     return null;
   }
+};
+
+export const createTopic = async (name: string, token?: string): Promise<Topic> => {
+  const authToken = token || getAuthToken();
+  
+  if (!authToken) {
+    throw new Error('Usuário não está autenticado. Faça login novamente.');
+  }
+
+  const response = await fetch(`${API_BASE_URL}/topics`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${authToken}`,
+    },
+    body: JSON.stringify({ name }),
+  });
+
+  const responseData = await response.json();
+
+  if (!response.ok) {
+    throw new Error(responseData.error || `HTTP error! status: ${response.status}`);
+  }
+
+  if (responseData.status === 'error') {
+    throw new Error(responseData.error);
+  }
+
+  return responseData.data;
 };
