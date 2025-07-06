@@ -39,18 +39,25 @@ const checkExpiredSessions = () => {
   return (dispatch: AppDispatch) => {
     const now = Date.now();
     const sessions = loadSessionsFromStorage();
-    const expiredSessions: number[] = [];
+    const expiredTopicIds: number[] = [];
+    const activeSessions: Record<number, ActiveSession> = {};
     
     Object.values(sessions).forEach(session => {
       if (now >= session.endTime) {
-        expiredSessions.push(session.topicId);
+        expiredTopicIds.push(session.topicId);
+      } else {
+        activeSessions[session.topicId] = session;
       }
     });
     
-    if (expiredSessions.length > 0) {
-      expiredSessions.forEach(topicId => {
+    if (expiredTopicIds.length > 0) {
+      
+      saveSessionsToStorage(activeSessions);
+      
+      dispatch(sessionSlice.actions.closeMultipleSessions(expiredTopicIds));
+      
+      expiredTopicIds.forEach(topicId => {
         dispatch(updateTopicStatus({ id: topicId, status: 'Votação Encerrada' }));
-        dispatch(sessionSlice.actions.closeVotingSession(topicId));
       });
       
       dispatch(fetchTopics());
@@ -72,6 +79,12 @@ const sessionSlice = createSlice({
       const topicId = action.payload;
       delete state.activeSessions[topicId];
       saveSessionsToStorage(state.activeSessions);
+    },
+    closeMultipleSessions: (state, action: PayloadAction<number[]>) => {
+      const topicIds = action.payload;
+      topicIds.forEach(topicId => {
+        delete state.activeSessions[topicId];
+      });
     },
     clearError: (state) => {
       state.error = null;

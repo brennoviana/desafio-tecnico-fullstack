@@ -20,15 +20,23 @@ export const useSessionChecker = () => {
 
     const intervalId = setInterval(() => {
       dispatch(checkExpiredSessions());
-    }, 30000);
+    }, 15000);
+
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'voting_sessions') {
+        dispatch(checkExpiredSessions());
+      }
+    };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
     window.addEventListener('focus', handleFocus);
+    window.addEventListener('storage', handleStorageChange);
 
     return () => {
       clearInterval(intervalId);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('storage', handleStorageChange);
     };
   }, [dispatch]);
 
