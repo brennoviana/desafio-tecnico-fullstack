@@ -73,7 +73,9 @@ docker-compose up --build
 
 > 💡 **Nginx** está configurado como proxy reverso para servir a aplicação de forma integrada.
 
-Para acessar o dashboard: http://localhost/dashboard
+> ⚠️ **Observação**: O arquivo `.env` foi mantido no repositório para facilitar o teste da aplicação.
+
+---
 
 ❗ Dívidas Técnicas
  Integração com API externa de verificação de CPF
@@ -83,8 +85,8 @@ Para acessar o dashboard: http://localhost/dashboard
  Notificações via MQTT não incluídas por falta de tempo. A solução ideal incluiria publicação do resultado ao encerrar sessão.
 
 📌 Observações Pessoais
-Este projeto foi meu primeiro desenvolvimento prático com Go. Já havia estudado a linguagem anteriormente, mas ainda não tinha tido a oportunidade de aplicá-la em um sistema completo. Foi um ótimo exercício para reforçar conceitos e estrutura de projeto em Go.
+ Este projeto foi meu primeiro desenvolvimento prático com Go. Já havia estudado a linguagem anteriormente, mas ainda não tinha tido a oportunidade de aplicá-la em um sistema completo. Foi um ótimo exercício para reforçar conceitos e estrutura de projeto em Go.
 
-Também foi minha primeira vez utilizando Redux com React. Estudei o básico durante o desafio para garantir a correta separação e gerenciamento de estado, mas reconheço que a implementação ainda pode evoluir.
+ Também foi minha primeira vez utilizando Redux com React. Estudei o básico durante o desafio para garantir a correta separação e gerenciamento de estado, mas reconheço que a implementação ainda pode evoluir.
 
-Por conta do tempo do desafio, algumas soluções poderiam ser mais bem refinadas. Ainda assim, acredito que a base entregue atende bem aos requisitos propostos.
+ Por conta do tempo do desafio, algumas soluções poderiam ser mais bem refinadas. Ainda assim, acredito que a base entregue atende bem aos requisitos propostos.

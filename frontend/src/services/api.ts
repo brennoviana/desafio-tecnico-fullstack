@@ -1,7 +1,7 @@
 import type { Topic } from '../types/Topic';
 import type { User, LoginCredentials, RegisterCredentials } from '../types/Auth';
 
-const API_BASE_URL = 'http://localhost:8080/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const fetchTopics = async (): Promise<Topic[]> => {
   const response = await fetch(`${API_BASE_URL}/topics`);
