@@ -20,12 +20,10 @@ export const ResultsScreen: React.FC = () => {
   const resultsError = topicResult?.error || null;
 
   useEffect(() => {
-    // Load topics if not already loaded
     if (topics.length === 0) {
       dispatch(fetchTopics());
     }
     
-    // Load vote results
     if (topicId) {
       dispatch(fetchVoteResults(numericTopicId));
     }

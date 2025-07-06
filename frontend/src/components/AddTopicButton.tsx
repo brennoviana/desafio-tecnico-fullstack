@@ -2,11 +2,7 @@ import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import { createTopic } from '../store/topicsSlice';
 
-interface AddTopicButtonProps {
-  onTopicAdded?: () => void;
-}
-
-export const AddTopicButton: React.FC<AddTopicButtonProps> = () => {
+export const AddTopicButton: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [topicName, setTopicName] = useState('');
   const dispatch = useAppDispatch();
