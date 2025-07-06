@@ -16,7 +16,6 @@ interface SessionState {
 
 const STORAGE_KEY = 'voting_sessions';
 
-// Função para salvar sessões no localStorage
 const saveSessionsToStorage = (sessions: Record<number, ActiveSession>) => {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));

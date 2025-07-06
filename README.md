@@ -96,7 +96,7 @@ docker-compose up --build
 **Motivo**: Priorização de funcionalidades core devido ao tempo limitado.
 
 **Solução Ideal**:
-- Configurar broker MQTT (ex: Mosquitto)
+- Configurar broker MQTT
 - Publicar eventos quando sessões abrem/fecham
 - Frontend subscribir para receber atualizações em tempo real
 
