@@ -1,20 +1,65 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
 import { openVotingSession as apiOpenVotingSession } from '../services/api';
-import { updateTopicStatus } from './topicsSlice';
+import { updateTopicStatus, fetchTopics } from './topicsSlice';
 import type { AppDispatch } from '.';
 
+interface ActiveSession {
+  topicId: number;
+  endTime: number;
+}
+
 interface SessionState {
-  activeSessions: Record<number, {
-    topicId: number;
-    timeoutId: number | null;
-    endTime: Date;
-  }>;
+  activeSessions: Record<number, ActiveSession>;
   loading: boolean;
   error: string | null;
 }
 
+const STORAGE_KEY = 'voting_sessions';
+
+// Função para salvar sessões no localStorage
+const saveSessionsToStorage = (sessions: Record<number, ActiveSession>) => {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
+  } catch (error) {
+    console.error('Erro ao salvar sessões no localStorage:', error);
+  }
+};
+
+const loadSessionsFromStorage = (): Record<number, ActiveSession> => {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    return stored ? JSON.parse(stored) : {};
+  } catch (error) {
+    console.error('Erro ao carregar sessões do localStorage:', error);
+    return {};
+  }
+};
+
+const checkExpiredSessions = () => {
+  return (dispatch: AppDispatch) => {
+    const now = Date.now();
+    const sessions = loadSessionsFromStorage();
+    const expiredSessions: number[] = [];
+    
+    Object.values(sessions).forEach(session => {
+      if (now >= session.endTime) {
+        expiredSessions.push(session.topicId);
+      }
+    });
+    
+    if (expiredSessions.length > 0) {
+      expiredSessions.forEach(topicId => {
+        dispatch(updateTopicStatus({ id: topicId, status: 'Votação Encerrada' }));
+        dispatch(sessionSlice.actions.closeVotingSession(topicId));
+      });
+      
+      dispatch(fetchTopics());
+    }
+  };
+};
+
 const initialState: SessionState = {
-  activeSessions: {},
+  activeSessions: loadSessionsFromStorage(),
   loading: false,
   error: null,
 };
@@ -25,18 +70,14 @@ const sessionSlice = createSlice({
   reducers: {
     closeVotingSession: (state, action: PayloadAction<number>) => {
       const topicId = action.payload;
-      const session = state.activeSessions[topicId];
-      
-      if (session) {
-        if (session.timeoutId) {
-          window.clearTimeout(session.timeoutId);
-        }
-        
-        delete state.activeSessions[topicId];
-      }
+      delete state.activeSessions[topicId];
+      saveSessionsToStorage(state.activeSessions);
     },
     clearError: (state) => {
       state.error = null;
+    },
+    initializeSessions: (state) => {
+      state.activeSessions = loadSessionsFromStorage();
     },
   },
   extraReducers: (builder) => {
@@ -47,13 +88,14 @@ const sessionSlice = createSlice({
       })
       .addCase(openVotingSession.fulfilled, (state, action) => {
         state.loading = false;
-        const { topicId, timeoutId, endTime } = action.payload;
+        const { topicId, endTime } = action.payload;
         
         state.activeSessions[topicId] = {
           topicId,
-          timeoutId,
           endTime,
         };
+        
+        saveSessionsToStorage(state.activeSessions);
       })
       .addCase(openVotingSession.rejected, (state, action) => {
         state.loading = false;
@@ -65,7 +107,6 @@ const sessionSlice = createSlice({
 export const closeVotingSession = (topicId: number) => {
   return (dispatch: AppDispatch) => {
     dispatch(updateTopicStatus({ id: topicId, status: 'Votação Encerrada' }));
-    
     dispatch(sessionSlice.actions.closeVotingSession(topicId));
   };
 };
@@ -81,16 +122,10 @@ export const openVotingSession = createAsyncThunk(
       
       dispatch(updateTopicStatus({ id: topicId, status: 'Sessão Aberta' }));
       
-      const endTime = new Date(Date.now() + duration * 60 * 1000);
-      
-      const timeoutId = window.setTimeout(() => {
-        dispatch(updateTopicStatus({ id: topicId, status: 'Votação Encerrada' }));
-        dispatch(sessionSlice.actions.closeVotingSession(topicId));
-      }, duration * 60 * 1000);
+      const endTime = Date.now() + duration * 60 * 1000;
       
       return {
         topicId,
-        timeoutId,
         endTime,
       };
     } catch (error) {
@@ -99,5 +134,6 @@ export const openVotingSession = createAsyncThunk(
   }
 );
 
-export const { clearError } = sessionSlice.actions;
+export const { clearError, initializeSessions } = sessionSlice.actions;
+export { checkExpiredSessions };
 export default sessionSlice.reducer; 

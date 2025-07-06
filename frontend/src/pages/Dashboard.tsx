@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import { logoutUser } from '../store/authSlice';
 import { fetchTopics } from '../store/topicsSlice';
 import { AddTopicButton } from '../components/AddTopicButton';
+import { useSessionChecker } from '../hooks/useSessionChecker';
 
 export const Dashboard: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -11,6 +12,8 @@ export const Dashboard: React.FC = () => {
   
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const { topics, loading, error } = useAppSelector((state) => state.topics);
+
+  useSessionChecker();
 
   useEffect(() => {
     dispatch(fetchTopics());
