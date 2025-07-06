@@ -159,7 +159,7 @@ export const SessionManager: React.FC = () => {
                   disabled={opening}
                   className="btn btn-warning btn-lg"
                 >
-                  {opening ? 'Abrindo sessão...' : 'Abrir Sessão de Votação'}
+                  {'Abrir Sessão de Votação'}
                 </button>
               </div>
             </div>
