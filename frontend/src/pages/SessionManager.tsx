@@ -8,7 +8,6 @@ export const SessionManager: React.FC = () => {
   const { topicId } = useParams<{ topicId: string }>();
   const [topic, setTopic] = useState<Topic | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [opening, setOpening] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
   const [duration, setDuration] = useState<number>(1);
@@ -61,6 +60,8 @@ export const SessionManager: React.FC = () => {
       
       await openVotingSession(parseInt(topicId), duration);
       setSuccess(true);
+      
+      navigate('/dashboard');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao abrir sessão');
     }
@@ -150,7 +151,6 @@ export const SessionManager: React.FC = () => {
 
                 <button
                   onClick={handleOpenSession}
-                  disabled={opening}
                   className="btn btn-warning btn-lg"
                 >
                   Abrir

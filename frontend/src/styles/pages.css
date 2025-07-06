@@ -154,6 +154,12 @@
   color: #991b1b;
 }
 
+.final-result.tied {
+  border-color: var(--warning);
+  background: var(--warning-light);
+  color: #92400e;
+}
+
 .final-result-title {
   font-size: 1.5rem;
   font-weight: 700;

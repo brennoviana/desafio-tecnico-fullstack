@@ -162,7 +162,8 @@ export const ResultsScreen: React.FC = () => {
 
                     {/* Result Declaration */}
                     {total > 0 && (
-                      <div className={`final-result ${voteResults.Sim > voteResults.Não ? 'approved' : 'rejected'}`}>
+                      <div className={`final-result ${voteResults.Sim > voteResults.Não ? 'approved' : 
+                                                     voteResults.Não > voteResults.Sim ? 'rejected' : 'tied'}`}>
                         <h3 className="final-result-title">
                           🏆 Resultado Final
                         </h3>
