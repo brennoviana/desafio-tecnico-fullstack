@@ -111,14 +111,13 @@ docker-compose up --build
 - Configurar CI/CD com validação de testes
 
 ### 4. Interface do Usuário e Experiência
-**Problema**: Frontend funcional mas com design básico e lógica que poderia ser mais polida.
+**Problema**: Interface funcional, com design ainda básico e focado na usabilidade mínima viável.
 
 **Motivo**: Tempo limitado foi priorizado para implementar as funcionalidades core e aprender Redux.
 
 **Solução Ideal**:
-- Implementar design system com componentes mais elaborados
 - Melhorar responsividade para diferentes dispositivos
-- Adicionar loading states e feedback visual mais rico
+- Adicionar um feedback visual mais rico
 - Implementar validações de formulário mais elegantes
 - Refatorar lógica de estado para ser mais robusta
 
@@ -127,4 +126,4 @@ docker-compose up --build
 
  Também foi minha primeira vez utilizando Redux com React. Estudei o básico durante o desafio para garantir a correta separação e gerenciamento de estado, mas reconheço que a implementação ainda pode evoluir.
 
- Por conta do tempo do desafio, algumas soluções poderiam ser mais bem refinadas. Ainda assim, acredito que a base entregue atende bem aos requisitos propostos.
+Por conta do tempo do desafio, acredito que a base entregue atende bem aos requisitos, com algumas partes que ainda podem evoluir.
