@@ -100,17 +100,7 @@ docker-compose up --build
 - Publicar eventos quando sessões abrem/fecham
 - Frontend subscribir para receber atualizações em tempo real
 
-### 3. Testes
-**Problema**: Cobertura de testes limitada.
-
-**Motivo**: Foco na implementação das funcionalidades principais.
-
-**Solução Ideal**:
-- Implementar testes unitários para todas as regras de negócio
-- Testes de integração para endpoints da API
-- Configurar CI/CD com validação de testes
-
-### 4. Interface do Usuário e Experiência
+### 3. Interface do Usuário e Experiência
 **Problema**: Interface funcional, com design ainda básico e focado na usabilidade mínima viável.
 
 **Motivo**: Tempo limitado foi priorizado para implementar as funcionalidades core e aprender Redux.
