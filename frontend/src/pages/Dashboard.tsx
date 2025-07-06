@@ -102,7 +102,7 @@ export const Dashboard: React.FC = () => {
                       </Link>
                     )}
 
-                    {isAuthenticated && (
+                    {isAuthenticated && topic.status === 'Aguardando Abertura' && (
                       <button
                         onClick={() => navigate(`/topic/${topic.id}/manage`)}
                         className="btn btn-warning"

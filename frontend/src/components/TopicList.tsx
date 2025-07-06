@@ -46,9 +46,8 @@ export const TopicList: React.FC<TopicListProps> = ({ topics, isAuthenticated })
       setError(null);
       setSessionStates(prev => ({ ...prev, [topicId]: true }));
       
-      await openVotingSession(topicId, 1); // 1 minute session
-      
-      alert('Sessão de votação aberta com sucesso! Duração: 1 minuto.');
+      await openVotingSession(topicId, 1);
+    
       
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao abrir sessão');

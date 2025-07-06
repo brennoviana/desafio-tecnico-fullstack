@@ -103,7 +103,7 @@ export const ResultsScreen: React.FC = () => {
                   <div className="text-center card" style={{ background: 'var(--gray-50)' }}>
                     <div className="card-body">
                       <p className="text-lg text-muted">
-                        Nenhum voto registrado ainda
+                        Nenhum voto registrado
                       </p>
                     </div>
                   </div>

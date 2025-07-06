@@ -10,4 +10,6 @@ dist
 .gitignore
 README.md
 .eslintrc*
-*.log 
+*.log
+Dockerfile
+.dockerignore 

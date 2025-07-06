@@ -1,18 +1,21 @@
-FROM node:20-alpine
+FROM node:22-alpine AS build
 
 WORKDIR /app
 
-# Copy package.json and package-lock.json (if available)
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
+RUN npm ci
 
-# Copy source code
 COPY . .
 
-# Expose port 5173
-EXPOSE 5173
+RUN npm run build
 
-# Run the development server
-CMD ["npm", "run", "dev", "--", "--host"] 
+FROM nginx:alpine
+
+COPY --from=build /app/dist /usr/share/nginx/html
+
+COPY nginx.conf /etc/nginx/nginx.conf
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"] 
