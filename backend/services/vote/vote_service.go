@@ -39,7 +39,7 @@ func (s *voteService) Vote(topicID int, userID int, choice string) error {
 		return err
 	}
 	if voted {
-		return errors.New("usuário já votou nesta pauta")
+		return errors.New("voto já registrado")
 	}
 	vote := models.Vote{TopicID: topicID, UserID: userID, Choice: choice}
 	return s.voteRepo.RegisterVote(vote)

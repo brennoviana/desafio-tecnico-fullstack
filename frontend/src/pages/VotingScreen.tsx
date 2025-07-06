@@ -135,7 +135,7 @@ export const VotingScreen: React.FC = () => {
 
             {topic.status === 'Sessão Aberta' && !hasVoted && !success && (
               <div>
-                <h3 className="mb-6 text-center">Como você vota?</h3>
+                <h3 className="mb-6 text-center">Qual a sua opção?</h3>
                 <div className="voting-buttons">
                   <button
                     onClick={() => handleVote('Sim')}
