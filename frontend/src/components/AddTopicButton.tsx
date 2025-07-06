@@ -33,7 +33,6 @@ export const AddTopicButton: React.FC = () => {
 
   return (
     <>
-      {/* The button that stays in the header */}
       <button
         onClick={() => setIsModalOpen(true)}
         className="btn btn-primary"
@@ -41,7 +40,6 @@ export const AddTopicButton: React.FC = () => {
         + Adicionar Tópico
       </button>
 
-      {/* Modal overlay */}
       {isModalOpen && (
         <div 
           className="modal-overlay"

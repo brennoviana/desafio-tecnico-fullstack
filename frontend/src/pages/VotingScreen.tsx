@@ -43,7 +43,6 @@ export const VotingScreen: React.FC = () => {
       if (err instanceof Error && err.message.includes('já votou')) {
         setHasVoted(true);
       }
-      // Error is handled by Redux state
     }
   };
 

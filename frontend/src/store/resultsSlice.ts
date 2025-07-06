@@ -90,7 +90,6 @@ const resultsSlice = createSlice({
         state.voteLoading = false;
         state.voteError = action.payload as string;
       })
-      // Fetch vote results
       .addCase(fetchVoteResults.pending, (state, action) => {
         const topicId = action.meta.arg;
         state.results[topicId] = {

@@ -9,7 +9,6 @@ export const ResultsScreen: React.FC = () => {
   const dispatch = useAppDispatch();
   const numericTopicId = parseInt(topicId || '0');
   
-  // Get state from Redux
   const { topics, loading: topicsLoading, error: topicsError } = useAppSelector((state) => state.topics);
   const { results } = useAppSelector((state) => state.results);
   
@@ -94,7 +93,6 @@ export const ResultsScreen: React.FC = () => {
               </span>
             </div>
             
-            {/* Vote Results */}
             {voteResults ? (
               <div>
                 <h3 className="mb-6">Resultados</h3>
@@ -109,7 +107,6 @@ export const ResultsScreen: React.FC = () => {
                   </div>
                 ) : (
                   <div>
-                    {/* Vote Summary */}
                     <div className="vote-results">
                       <div className="vote-result-card vote-result-yes">
                         <h4 className="mb-2">SIM</h4>
@@ -132,7 +129,6 @@ export const ResultsScreen: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Visual Progress Bar */}
                     <div className="mb-6">
                       <h4 className="mb-4">Distribuição dos Votos</h4>
                       <div className="progress-bar">
@@ -151,7 +147,6 @@ export const ResultsScreen: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Total Votes */}
                     <div className="text-center card mb-6 bg-gray-100">
                       <div className="card-body">
                         <p className="text-xl font-bold">
@@ -160,7 +155,6 @@ export const ResultsScreen: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Result Declaration */}
                     {total > 0 && (
                       <div className={`final-result ${voteResults.Sim > voteResults.Não ? 'approved' : 
                                                      voteResults.Não > voteResults.Sim ? 'rejected' : 'tied'}`}>

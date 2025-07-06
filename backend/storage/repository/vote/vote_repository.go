@@ -34,12 +34,11 @@ func (r *voteRepository) HasUserVoted(topicID int, userID int) (bool, error) {
 }
 
 func (r *voteRepository) GetResult(topicID int) (yes int, no int, err error) {
-	// Conta votos 'Sim'
 	err = r.db.QueryRow("SELECT COUNT(*) FROM votes WHERE topic_id = $1 AND choice = 'Sim'", topicID).Scan(&yes)
 	if err != nil {
 		return
 	}
-	// Conta votos 'Não'
+
 	err = r.db.QueryRow("SELECT COUNT(*) FROM votes WHERE topic_id = $1 AND choice = 'Não'", topicID).Scan(&no)
 	return
 }

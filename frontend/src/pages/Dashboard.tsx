@@ -32,7 +32,6 @@ export const Dashboard: React.FC = () => {
   return (
     <div className="page">
       <div className="container">
-        {/* Header */}
         <div className="header">
           <div className="header-content">
             <div>
@@ -65,7 +64,6 @@ export const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Topics Dashboard */}
         {error && (
           <div className="alert alert-danger">
             {error}
@@ -95,7 +93,6 @@ export const Dashboard: React.FC = () => {
                       </Link>
                     )}
                     
-                    {/* Results are always available for everyone */}
                     {topic.status === 'Votação Encerrada' && (
                       <Link to={`/topic/${topic.id}/results`} className="btn btn-info text-center">
                         Ver Resultados

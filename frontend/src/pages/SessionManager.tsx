@@ -28,7 +28,6 @@ export const SessionManager: React.FC = () => {
       }
 
       try {
-        // Load topic data
         const response = await fetch(`http://localhost:8080/api/topics`);
         const responseData = await response.json();
         const topicsData = responseData.data || [];
@@ -127,7 +126,6 @@ export const SessionManager: React.FC = () => {
             <div className="card-body">
               <h2 className="mb-6">{topic.name}</h2>
               
-              {/* Session Management */}
               <div className="mb-6">
                 <h3 className="mb-4">Abrir Sessão de Votação</h3>
                 

@@ -18,7 +18,6 @@ const initialState: TopicsState = {
   createError: null,
 };
 
-// Async thunks
 export const fetchTopics = createAsyncThunk(
   'topics/fetchTopics',
   async (_, { rejectWithValue }) => {
@@ -53,7 +52,6 @@ const topicsSlice = createSlice({
     clearCreateError: (state) => {
       state.createError = null;
     },
-    // Update topic status locally (for real-time updates)
     updateTopicStatus: (state, action: PayloadAction<{ id: number; status: string }>) => {
       const topic = state.topics.find(t => t.id === action.payload.id);
       if (topic) {
@@ -63,7 +61,6 @@ const topicsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Fetch topics
       .addCase(fetchTopics.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -77,7 +74,6 @@ const topicsSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-      // Create topic
       .addCase(createTopic.pending, (state) => {
         state.createLoading = true;
         state.createError = null;

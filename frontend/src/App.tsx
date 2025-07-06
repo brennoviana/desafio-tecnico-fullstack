@@ -15,21 +15,17 @@ function App() {
       <AuthInitializer>
         <Router>
           <Routes>
-            {/* Authentication routes */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             
-            {/* Main application routes */}
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/topic/:topicId/vote" element={<VotingScreen />} />
             <Route path="/topic/:topicId/results" element={<ResultsScreen />} />
             <Route path="/topic/:topicId/manage" element={<SessionManager />} />
             
-            {/* Redirect root to dashboard */}
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/topics" element={<Navigate to="/dashboard" replace />} />
             
-            {/* Fallback for unknown routes */}
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </Router>
