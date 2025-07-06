@@ -77,12 +77,50 @@ docker-compose up --build
 
 ---
 
-❗ Dívidas Técnicas
- Integração com API externa de verificação de CPF
- A verificação da elegibilidade do associado para votar, por meio da API https://user-info.herokuapp.com/users/{cpf}, não foi implementada porque o endpoint estava fora do ar ou inacessível no momento do desenvolvimento.
-    🛠️ Solução ideal: Implementar uma chamada HTTP para esse endpoint antes de registrar o voto e verificar se o cpf é valido para votar.
+## 🚧 Dívidas Técnicas
 
- Notificações via MQTT não incluídas por falta de tempo. A solução ideal incluiria publicação do resultado ao encerrar sessão.
+### 1. Integração com API Externa de Verificação de CPF
+**Problema**: A verificação da elegibilidade do associado para votar através da API `https://user-info.herokuapp.com/users/{cpf}` não foi implementada.
+
+**Motivo**: O endpoint estava fora do ar ou inacessível durante o desenvolvimento.
+
+**Solução Ideal**: 
+- Implementar uma chamada HTTP para esse endpoint antes de registrar o voto
+- Validar se o CPF é elegível para votar
+- Implementar cache para melhor performance
+- Tratar erros de timeout e indisponibilidade da API
+
+### 2. Notificações em Tempo Real via MQTT
+**Problema**: Sistema de notificações em tempo real não foi implementado.
+
+**Motivo**: Priorização de funcionalidades core devido ao tempo limitado.
+
+**Solução Ideal**:
+- Configurar broker MQTT (ex: Mosquitto)
+- Publicar eventos quando sessões abrem/fecham
+- Frontend subscribir para receber atualizações em tempo real
+
+### 3. Testes
+**Problema**: Cobertura de testes limitada.
+
+**Motivo**: Foco na implementação das funcionalidades principais.
+
+**Solução Ideal**:
+- Implementar testes unitários para todas as regras de negócio
+- Testes de integração para endpoints da API
+- Configurar CI/CD com validação de testes
+
+### 4. Interface do Usuário e Experiência
+**Problema**: Frontend funcional mas com design básico e lógica que poderia ser mais polida.
+
+**Motivo**: Tempo limitado foi priorizado para implementar as funcionalidades core e aprender Redux.
+
+**Solução Ideal**:
+- Implementar design system com componentes mais elaborados
+- Melhorar responsividade para diferentes dispositivos
+- Adicionar loading states e feedback visual mais rico
+- Implementar validações de formulário mais elegantes
+- Refatorar lógica de estado para ser mais robusta
 
 📌 Observações Pessoais
  Este projeto foi meu primeiro desenvolvimento prático com Go. Já havia estudado a linguagem anteriormente, mas ainda não tinha tido a oportunidade de aplicá-la em um sistema completo. Foi um ótimo exercício para reforçar conceitos e estrutura de projeto em Go.
