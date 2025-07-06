@@ -1,18 +1,20 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { openVotingSession } from '../services/api';
-import { useAppSelector } from '../hooks/redux';
-import type { Topic } from '../types/Topic';
+import { useAppDispatch, useAppSelector } from '../hooks/redux';
+import { openVotingSession } from '../store/sessionSlice';
+import { fetchTopics } from '../store/topicsSlice';
 
 export const SessionManager: React.FC = () => {
   const { topicId } = useParams<{ topicId: string }>();
-  const [topic, setTopic] = useState<Topic | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<boolean>(false);
   const [duration, setDuration] = useState<number>(1);
-  const { user, isAuthenticated } = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  
+  const { user, isAuthenticated } = useAppSelector((state) => state.auth);
+  const { topics, loading, error } = useAppSelector((state) => state.topics);
+  const { loading: sessionLoading, error: sessionError } = useAppSelector((state) => state.session);
+  
+  const topic = topics.find(t => t.id === parseInt(topicId || '0'));
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -20,53 +22,25 @@ export const SessionManager: React.FC = () => {
       return;
     }
 
-    const loadTopic = async () => {
-      if (!topicId) {
-        setError('ID do tópico não encontrado');
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const response = await fetch(`http://localhost:8080/api/topics`);
-        const responseData = await response.json();
-        const topicsData = responseData.data || [];
-        const currentTopic = topicsData.find((t: Topic) => t.id === parseInt(topicId));
-        
-        if (!currentTopic) {
-          setError('Tópico não encontrado');
-          setLoading(false);
-          return;
-        }
-
-        setTopic(currentTopic);
-      } catch (err) {
-        console.error(err);
-        setError('Erro ao carregar dados do tópico');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadTopic();
-  }, [topicId, isAuthenticated, navigate]);
+    if (topics.length === 0) {
+      dispatch(fetchTopics());
+    }
+  }, [isAuthenticated, navigate, dispatch, topics.length]);
 
   const handleOpenSession = async () => {
     if (!topicId) return;
 
     try {
-      setError(null);
-      
-      await openVotingSession(parseInt(topicId), duration);
-      setSuccess(true);
+      await dispatch(openVotingSession({ 
+        topicId: parseInt(topicId), 
+        duration 
+      })).unwrap();
       
       navigate('/dashboard');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao abrir sessão');
+      console.error('Error opening session:', err);
     }
   };
-
-
 
   if (loading) {
     return (
@@ -92,8 +66,6 @@ export const SessionManager: React.FC = () => {
     );
   }
 
-
-
   return (
     <div className="page">
       <div className="container container-md">
@@ -109,15 +81,15 @@ export const SessionManager: React.FC = () => {
           )}
         </div>
 
-        {error && (
+        {(error || sessionError) && (
           <div className="alert alert-danger">
-            {error}
+            {error || sessionError}
           </div>
         )}
 
-        {success && (
-          <div className="alert alert-success">
-            Sessão de votação aberta com sucesso!
+        {sessionLoading && (
+          <div className="alert alert-info">
+            Abrindo sessão de votação...
           </div>
         )}
 
@@ -148,9 +120,10 @@ export const SessionManager: React.FC = () => {
 
                 <button
                   onClick={handleOpenSession}
+                  disabled={sessionLoading}
                   className="btn btn-warning btn-lg"
                 >
-                  Abrir
+                  Abrir Sessão
                 </button>
               </div>
             </div>
