@@ -112,6 +112,7 @@ docker-compose up --build
 - Refatorar lógica de estado para ser mais robusta
 
 📌 Observações Pessoais
+
  Este projeto foi meu primeiro desenvolvimento prático com Go. Já havia estudado a linguagem anteriormente, mas ainda não tinha tido a oportunidade de aplicá-la em um sistema completo. Foi um ótimo exercício para reforçar conceitos e estrutura de projeto em Go.
 
  Também foi minha primeira vez utilizando Redux com React. Estudei o básico durante o desafio para garantir a correta separação e gerenciamento de estado, mas reconheço que a implementação ainda pode evoluir.
