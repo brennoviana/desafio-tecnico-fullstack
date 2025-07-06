@@ -91,14 +91,17 @@ docker-compose up --build
 - Tratar erros de timeout e indisponibilidade da API
 
 ### 2. Notificações em Tempo Real via MQTT
-**Problema**: Sistema de notificações em tempo real não foi implementado.
+**Problema**: Sessões de votação só são atualizadas quando o usuário recarrega a página ou após verificação periódica (15-30 segundos), causando atraso na visualização de status.
 
 **Motivo**: Priorização de funcionalidades core devido ao tempo limitado.
 
 **Solução Ideal**:
-- Configurar broker MQTT
-- Publicar eventos quando sessões abrem/fecham
-- Frontend subscribir para receber atualizações em tempo real
+- **Backend**: Configurar broker MQTT e publicar eventos:
+  - Quando sessão abre
+  - Quando sessão expira  
+- **Frontend**: Subscribir aos tópicos MQTT para atualizações instantâneas
+- **Benefícios**: Todos os usuários veriam mudanças de status em **tempo real**
+- **Escalabilidade**: Suporta centenas de usuários simultâneos sem polling excessivo
 
 ### 3. Interface do Usuário e Experiência
 **Problema**: Interface funcional, com design ainda básico e focado na usabilidade mínima viável.
