@@ -58,14 +58,11 @@ export const SessionManager: React.FC = () => {
 
     try {
       setError(null);
-      setOpening(true);
       
       await openVotingSession(parseInt(topicId), duration);
       setSuccess(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao abrir sessão');
-    } finally {
-      setOpening(false);
     }
   };
 
@@ -148,9 +145,6 @@ export const SessionManager: React.FC = () => {
                       className="form-input"
                       style={{ width: '120px' }}
                     />
-                    <span className="text-muted text-sm">
-                      (máximo 60 minutos)
-                    </span>
                   </div>
                 </div>
 
@@ -159,7 +153,7 @@ export const SessionManager: React.FC = () => {
                   disabled={opening}
                   className="btn btn-warning btn-lg"
                 >
-                  {'Abrir Sessão de Votação'}
+                  Abrir
                 </button>
               </div>
             </div>
