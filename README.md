@@ -87,4 +87,4 @@ Este projeto foi meu primeiro desenvolvimento prático com Go. Já havia estudad
 
 Também foi minha primeira vez utilizando Redux com React. Estudei o básico durante o desafio para garantir a correta separação e gerenciamento de estado, mas reconheço que a implementação ainda pode evoluir.
 
-Por conta do tempo do desafio, algumas soluções poderiam ser mais bem refinadas com um prazo maior. Ainda assim, acredito que a base entregue atende bem aos requisitos propostos.
+Por conta do tempo do desafio, algumas soluções poderiam ser mais bem refinadas. Ainda assim, acredito que a base entregue atende bem aos requisitos propostos.
