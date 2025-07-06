@@ -97,7 +97,7 @@ export const SessionManager: React.FC = () => {
 
   return (
     <div className="page">
-      <div className="container" style={{ maxWidth: '600px' }}>
+      <div className="container container-md">
         <Link to="/dashboard" className="back-link">
           ← Voltar ao Dashboard
         </Link>
@@ -143,8 +143,7 @@ export const SessionManager: React.FC = () => {
                       max="60"
                       value={duration}
                       onChange={(e) => setDuration(parseInt(e.target.value) || 1)}
-                      className="form-input"
-                      style={{ width: '120px' }}
+                      className="form-input w-input-sm"
                     />
                   </div>
                 </div>

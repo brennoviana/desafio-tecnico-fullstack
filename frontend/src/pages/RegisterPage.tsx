@@ -42,7 +42,7 @@ export const RegisterPage: React.FC = () => {
 
   return (
     <div className="centered-page">
-      <div className="card" style={{ width: '100%', maxWidth: '400px' }}>
+      <div className="card container-sm w-full">
         <div className="card-body">
           <h1 className="text-center mb-6">Registrar</h1>
           
@@ -110,8 +110,7 @@ export const RegisterPage: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="btn btn-success btn-lg"
-              style={{ width: '100%' }}
+              className="btn btn-success btn-lg w-full"
             >
               {loading ? 'Registrando...' : 'Registrar'}
             </button>

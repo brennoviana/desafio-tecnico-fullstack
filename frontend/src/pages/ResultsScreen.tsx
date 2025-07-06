@@ -69,7 +69,7 @@ export const ResultsScreen: React.FC = () => {
 
   return (
     <div className="page">
-      <div className="container" style={{ maxWidth: '800px' }}>
+      <div className="container container-lg">
         <Link to="/dashboard" className="back-link">
           ← Voltar ao Dashboard
         </Link>
@@ -100,7 +100,7 @@ export const ResultsScreen: React.FC = () => {
                 <h3 className="mb-6">Resultados</h3>
                 
                 {total === 0 ? (
-                  <div className="text-center card" style={{ background: 'var(--gray-50)' }}>
+                  <div className="text-center card bg-gray-50">
                     <div className="card-body">
                       <p className="text-lg text-muted">
                         Nenhum voto registrado
@@ -113,20 +113,20 @@ export const ResultsScreen: React.FC = () => {
                     <div className="vote-results">
                       <div className="vote-result-card vote-result-yes">
                         <h4 className="mb-2">SIM</h4>
-                        <p className="vote-count" style={{ color: '#065f46' }}>
+                        <p className="vote-count text-success-dark">
                           {voteResults.Sim}
                         </p>
-                        <p className="vote-percentage" style={{ color: '#065f46' }}>
+                        <p className="vote-percentage text-success-dark">
                           {simPercentage}%
                         </p>
                       </div>
 
                       <div className="vote-result-card vote-result-no">
                         <h4 className="mb-2">NÃO</h4>
-                        <p className="vote-count" style={{ color: '#991b1b' }}>
+                        <p className="vote-count text-danger-dark">
                           {voteResults.Não}
                         </p>
-                        <p className="vote-percentage" style={{ color: '#991b1b' }}>
+                        <p className="vote-percentage text-danger-dark">
                           {naoPercentage}%
                         </p>
                       </div>
@@ -152,7 +152,7 @@ export const ResultsScreen: React.FC = () => {
                     </div>
 
                     {/* Total Votes */}
-                    <div className="text-center card mb-6" style={{ background: 'var(--gray-100)' }}>
+                    <div className="text-center card mb-6 bg-gray-100">
                       <div className="card-body">
                         <p className="text-xl font-bold">
                           Total de Votos: {total}
@@ -177,7 +177,7 @@ export const ResultsScreen: React.FC = () => {
                 )}
               </div>
             ) : (
-              <div className="text-center card" style={{ background: 'var(--gray-50)' }}>
+              <div className="text-center card bg-gray-50">
                 <div className="card-body">
                   <p className="text-lg text-muted">
                     Carregando resultados...

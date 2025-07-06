@@ -89,7 +89,7 @@ export const VotingScreen: React.FC = () => {
 
   return (
     <div className="page">
-      <div className="container" style={{ maxWidth: '600px' }}>
+      <div className="container container-md">
         <Link to="/dashboard" className="back-link">
           ← Voltar ao Dashboard
         </Link>
@@ -156,7 +156,7 @@ export const VotingScreen: React.FC = () => {
             )}
 
             {hasVoted && !success && (
-              <div className="text-center card" style={{ background: 'var(--gray-50)' }}>
+              <div className="text-center card bg-gray-50">
                 <div className="card-body">
                   <p className="text-lg mb-4">
                     Você já votou nesta pauta.

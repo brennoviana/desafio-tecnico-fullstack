@@ -125,4 +125,76 @@
 
 .mt-6 {
   margin-top: var(--space-6);
+}
+
+/* Width Utilities */
+.w-full {
+  width: 100%;
+}
+
+.w-auto {
+  width: auto;
+}
+
+.w-input-sm {
+  width: 120px;
+}
+
+/* Max-Width Utilities */
+.max-w-sm {
+  max-width: 500px;
+}
+
+.max-w-md {
+  max-width: 600px;
+}
+
+.max-w-lg {
+  max-width: 800px;
+}
+
+/* Container Utilities */
+.container-sm {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.container-md {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.container-lg {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Text Colors */
+.text-primary {
+  color: var(--primary);
+}
+
+.text-success-dark {
+  color: #065f46;
+}
+
+.text-danger-dark {
+  color: #991b1b;
+}
+
+/* Background Utilities */
+.bg-gray-50 {
+  background: var(--gray-50);
+}
+
+.bg-gray-100 {
+  background: var(--gray-100);
+}
+
+/* Loading Screen Utilities */
+.loading-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 } 
